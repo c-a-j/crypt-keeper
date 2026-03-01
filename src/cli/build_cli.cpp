@@ -2,8 +2,10 @@
 #include "commands/init.hpp"
 #include "commands/get.hpp"
 #include "commands/config.hpp"
+#include "cli/build_cli.hpp"
 
-void build_cli(CLI::App& app) {
+
+void build_cli(CLI::App& app, Crypt crypt) {
   std::string store = "vault.ck";
   bool verbose = false;
   
@@ -13,10 +15,10 @@ void build_cli(CLI::App& app) {
   app.add_option("-s, --store", store, "Path to encrypted store");
   app.add_option("-v, --verbose", verbose, "Path verbose output");
   
-  auto* init = app.add_subcommand("init", "initialize a new store");
-  // std::string recipient;
-  // init -> add_option("-r,--recipient", recipient, "Recipient key ID/email") -> required();
-  init -> callback([&] { run_init(); });
+  auto* init = app.add_subcommand("init", "initialize a new crypt");
+  init -> add_option("-n,--name", crypt.name, "crypt name") -> required();
+  init -> add_option("-k,--key", crypt.key, "crypt key") -> required();
+  init -> callback([&] { run_init(crypt.name, crypt.key); });
  
   auto* get = app.add_subcommand("get", "Get a secret");
   // std::string key;

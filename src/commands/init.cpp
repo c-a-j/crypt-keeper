@@ -29,7 +29,7 @@ fs::path crypt_root() {
 #endif
 }
 
-void init_crypt(const char* crypt_name) {
+void init_crypt(std::string crypt_name, std::string crypt_key) {
   fs::path dir = crypt_root() / crypt_name;
   std::error_code ec;
   bool created = fs::create_directories(dir, ec);
@@ -46,6 +46,6 @@ void init_crypt(const char* crypt_name) {
   }
 }
 
-void run_init() {
-  init_crypt("foo");
+void run_init(std::string crypt_name, std::string crypt_key) {
+  init_crypt(crypt_name, crypt_key);
 }

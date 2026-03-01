@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GPGME REQUIRED gpgme)
+
 add_executable(ck
     src/main.cpp
     src/cli/build_cli.cpp
@@ -18,7 +21,6 @@ add_executable(ck
 )
 
 include(FetchContent)
-
 FetchContent_Declare(
     CLI11
     GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
@@ -26,5 +28,15 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(CLI11)
-target_link_libraries(ck PRIVATE CLI11::CLI11)
-target_include_directories(ck PRIVATE include)
+target_link_libraries(
+    ck PRIVATE 
+    CLI11::CLI11
+    ${GPGME_LIBRARIES}
+)
+
+
+target_include_directories(
+    ck PRIVATE 
+    include 
+    ${GPGME_INCLUDE_DIRS}
+)
