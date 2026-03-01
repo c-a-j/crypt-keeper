@@ -8,4 +8,4 @@ struct Crypt {
   std::string key;
 };
 
-void build_cli(CLI::App&, Crypt);
+void build_cli(CLI::App&, Crypt&);

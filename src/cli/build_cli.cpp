@@ -5,7 +5,7 @@
 #include "cli/build_cli.hpp"
 
 
-void build_cli(CLI::App& app, Crypt crypt) {
+void build_cli(CLI::App& app, Crypt& crypt) {
   std::string store = "vault.ck";
   bool verbose = false;
   
