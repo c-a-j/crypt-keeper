@@ -4,7 +4,7 @@ build_dir := "build"
 build_type := "Debug"
 
 configure:
-    cmake -S . -B {{build_dir}} -DCMAKE_BUILD_TYPE={{build_type}}
+    cmake -S . -B {{build_dir}} -DCK_ENABLE_SANITIZERS=OFF -DCMAKE_BUILD_TYPE={{build_type}}
 
 build: configure
     cmake --build {{build_dir}}
