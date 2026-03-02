@@ -34,10 +34,14 @@ namespace ck::cmd::init {
   #endif
   }
   
-  void init_crypt(std::string crypt_name, std::string key_fpr) {
+  
+  std::expected<void, InitError> init_crypt(std::string crypt_name, std::string key_fpr) {
     if (!ck::lib::crypto::public_key_exists(key_fpr)) {
       logger.error("Public key not found: ", key_fpr);
-      return;
+      return std::unexpected(InitError {
+        InitErrc::KeyNotFound,
+        "Public key not found: "
+      });
     }
     
     fs::path dir = crypt_root() / crypt_name;
@@ -45,29 +49,42 @@ namespace ck::cmd::init {
     bool created = fs::create_directories(dir, ec);
     if (ec) {
       logger.error("Failed to create crypt: ", ec.message());
-      return;
+      return std::unexpected(InitError {
+        InitErrc::CreateDirectoryFailed,
+        ec.message()
+      });
     }
     
     if (!created) {
       std::ostringstream ss;
       logger.error("Crypt already exists: ", dir.string());
-      return;
+      return std::unexpected(InitError {
+        InitErrc::AlreadyExists,
+        "Crypt already exists"
+      });
     } 
     
     const fs::path gpg_id_path = dir / ".gpg-id";
     std::ofstream gpg_id_file(gpg_id_path, std::ios::out | std::ios::trunc);
     if (!gpg_id_file.is_open()) {
       logger.error("Failed to open .gpg-id for writing: ", gpg_id_path.string());
-      return;
+      return std::unexpected(InitError {
+        InitErrc::OpenGpgIdFailed,
+        "Failed to open .gpg-id for writing"
+      });
     }
     
     gpg_id_file << key_fpr << '\n';
     if (!gpg_id_file) {
       logger.error("Failed to write .gpg-id: ", gpg_id_path.string());
-      return;
+      return std::unexpected(InitError {
+        InitErrc::WriteGpgIdFailed,
+        "Failed to write to .gpg-id"
+      });
     }
     
     logger.success("Crypt initialized: ", dir.string());
+    return {};
   }
   
   void run_init(std::string crypt_name, std::string crypt_key) {
