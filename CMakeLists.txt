@@ -24,3 +24,6 @@ add_subdirectory(src)
 
 ck_apply_compiler_options(ck)
 ck_apply_compiler_options(ck_lib)
+
+enable_testing()
+add_subdirectory(tests)

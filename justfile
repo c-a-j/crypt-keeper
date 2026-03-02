@@ -11,3 +11,6 @@ build: configure
 
 run *args: build
     ./{{build_dir}}/ck {{args}}
+
+test filter="": build
+    cd {{build_dir}} && ctest --output-on-failure {{ if filter != "" { "-R " + filter } else { "" }}} 

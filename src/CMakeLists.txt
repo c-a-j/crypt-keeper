@@ -5,8 +5,8 @@ add_executable(ck main.cpp)
 
 add_subdirectory(lib)
 add_subdirectory(cli)
-add_subdirectory(commands)
-add_subdirectory(utils)
+add_subdirectory(cmd)
+add_subdirectory(util)
 
 target_compile_features(ck PRIVATE cxx_std_20)
 target_compile_features(ck_lib PUBLIC cxx_std_20)

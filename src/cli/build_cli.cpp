@@ -1,10 +1,11 @@
 #include <CLI/CLI.hpp>
-#include "commands/init.hpp"
-#include "commands/get.hpp"
-#include "commands/config.hpp"
+#include "cmd/init.hpp"
+#include "cmd/get.hpp"
+#include "cmd/config.hpp"
 #include "cli/build_cli.hpp"
 
-
+namespace ck::cli {
+namespace cmd = ck::cmd;
 void build_cli(CLI::App& app, Crypt& crypt) {
   std::string store = "vault.ck";
   bool verbose = false;
@@ -17,14 +18,15 @@ void build_cli(CLI::App& app, Crypt& crypt) {
   
   auto* init = app.add_subcommand("init", "initialize a new crypt");
   init -> add_option("-n,--name", crypt.name, "crypt name") -> required();
-  init -> add_option("-k,--key", crypt.key, "crypt key") -> required();
-  init -> callback([&] { run_init(crypt.name, crypt.key); });
+  init -> add_option("-k,--key", crypt.key_fpr, "crypt key") -> required();
+  init -> callback([&] { cmd::init::run_init(crypt.name, crypt.key_fpr); });
  
   auto* get = app.add_subcommand("get", "Get a secret");
   // std::string key;
   // get -> add_option("key", key, "Secret key path") -> required();
-  get -> callback([&] { run_get(); });
+  get -> callback([&] { cmd::get::run_get(); });
   
   auto* config = app.add_subcommand("config", "print config file");
-  config -> callback([&] { run_config(); });
+  config -> callback([&] { cmd::config::run_config(); });
+}
 }

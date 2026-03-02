@@ -1,7 +1,7 @@
 #pragma once
 #include <string_view>
 
-namespace  ck::logger {
+namespace  ck::util::logger {
   enum class Stream { Out, Err, Default };
   
   enum class Level {
