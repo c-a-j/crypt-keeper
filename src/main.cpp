@@ -15,10 +15,11 @@ extern "C" const char* __asan_default_options() {
 #endif
 
 int main(int argc, char** argv) {
-  ck::cli::Crypt crypt = {};
+  ck::cli::PasswordStore pstore = {};
+  int exit_code = 0;
 
   CLI::App app{"crypt-keeper"};
-  ck::cli::build_cli(app, crypt);
+  ck::cli::build_cli(app, pstore, exit_code);
   CLI11_PARSE(app, argc, argv)
   return 0;
 }

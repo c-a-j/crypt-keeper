@@ -2,10 +2,10 @@
 #include <gtest/gtest.h>
 
 #include "lib/crypto.hpp"
-#include "../utils/gen_key.hpp"
+#include "../util/gen_key.hpp"
 
 using namespace ck::lib::crypto;
-using namespace ck::tests::utils;
+using namespace ck::tests::util;
 
 class CryptoTest : public ::testing::Test {
   protected: 
@@ -26,6 +26,12 @@ TEST_F(CryptoTest, InitGgpmeSucceeds) {
   EXPECT_NO_THROW(init_gpgme());
 }
 
-TEST_F(CryptoTest, KeyExistsTrueWhenKeyExists) {
+TEST_F(CryptoTest, KeyExistsReturnTrue) {
   EXPECT_TRUE(key_exists(generated_fpr_, true));
+}
+
+TEST_F(CryptoTest, KeyNotExistsReturnFalse) {
+  std::string fpr = generated_fpr_;
+  gnupg_home_.reset();
+  EXPECT_FALSE(key_exists(fpr, true));
 }

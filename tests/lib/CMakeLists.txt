@@ -1,6 +1,6 @@
 add_executable(crypto_test
   crypto_test.cpp
-  ../utils/gen_key.cpp
+  ../util/gen_key.cpp
 )
 
 target_link_libraries(crypto_test PRIVATE

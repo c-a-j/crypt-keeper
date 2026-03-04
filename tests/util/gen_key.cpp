@@ -10,41 +10,41 @@ using namespace ck::lib::crypto;
 
 namespace fs = std::filesystem;
 
-namespace ck::tests::utils {
-    ScopedGnupgHome::ScopedGnupgHome() {
-      char tmpl[] = "/tmp/ck-gnupg-XXXXXX";
-      char* dir = mkdtemp(tmpl);
-      if (dir == nullptr) {
-        throw std::runtime_error("mkdtemp failed");
-      }
-      tmp_home_ = dir;
-      
-      // GnuPG requires restrictive permissions on home dir
-      if (chmod(tmp_home_.c_str(), 0700) != 0) {
-        throw std::runtime_error("chmod 0700 failed for GNUPGHOME");
-      }
+namespace ck::tests::util {
+  ScopedGnupgHome::ScopedGnupgHome() {
+    char tmpl[] = "/tmp/ck-gnupg-XXXXXX";
+    char* dir = mkdtemp(tmpl);
+    if (dir == nullptr) {
+      throw std::runtime_error("mkdtemp failed");
+    }
+    tmp_home_ = dir;
+    
+    // GnuPG requires restrictive permissions on home dir
+    if (chmod(tmp_home_.c_str(), 0700) != 0) {
+      throw std::runtime_error("chmod 0700 failed for GNUPGHOME");
+    }
 
-      if (const char* old = std::getenv("GNUPGHOME")) {
-        home_ = old;
-      }
-      if (setenv("GNUPGHOME", tmp_home_.c_str(), 1) != 0) {
-        throw std::runtime_error("setenv(GNUPGHOME) failed");
-      }
+    if (const char* old = std::getenv("GNUPGHOME")) {
+      home_ = old;
     }
-  
-    ScopedGnupgHome::~ScopedGnupgHome() {
-      if (home_.has_value()) {
-        setenv("GNUPGHOME", home_->c_str(), 1);
-      } else {
-        unsetenv("GNUPGHOME");
-      }
-      std::error_code ec;
-      fs::remove_all(tmp_home_, ec);
+    if (setenv("GNUPGHOME", tmp_home_.c_str(), 1) != 0) {
+      throw std::runtime_error("setenv(GNUPGHOME) failed");
     }
-  
-    const std::string& ScopedGnupgHome::path() const { 
-      return tmp_home_; 
+  }
+
+  ScopedGnupgHome::~ScopedGnupgHome() {
+    if (home_.has_value()) {
+      setenv("GNUPGHOME", home_->c_str(), 1);
+    } else {
+      unsetenv("GNUPGHOME");
     }
+    std::error_code ec;
+    fs::remove_all(tmp_home_, ec);
+  }
+
+  const std::string& ScopedGnupgHome::path() const { 
+    return tmp_home_; 
+  }
   
   std::string generated_fpr_;
   std::string tmp_home_ = "/tmp/gnupg";

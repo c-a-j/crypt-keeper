@@ -3,10 +3,10 @@
 #include <string>
 
 namespace ck::cli {
-  struct Crypt {
+  struct PasswordStore {
     std::string name;
     std::string key_fpr;
   };
   
-  void build_cli(CLI::App&, Crypt&);
+  void build_cli(CLI::App&, PasswordStore&, int&);
 }

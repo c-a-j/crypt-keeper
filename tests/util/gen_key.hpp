@@ -2,7 +2,7 @@
 #include <string>
 #include <optional>
 
-namespace ck::tests::utils {
+namespace ck::tests::util {
   class ScopedGnupgHome {
     public:
       ScopedGnupgHome();

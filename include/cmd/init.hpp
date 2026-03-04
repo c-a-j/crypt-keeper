@@ -16,10 +16,12 @@ namespace ck::cmd::init {
   
   struct InitError {
     InitErrc code;
-    std::string detail;
+    std::string msg1;
+    std::string msg2 = {};
+    
+    bool has_msg2() const { return !msg2.empty(); }
   };
   
-  void run_init(std::string, std::string);
-  std::expected<void, InitError> init_crypt(std::string, std::string);
-  
+  std::expected<void, InitError> create_store(std::string, std::string);
+  int init_store(std::string, std::string);
 }

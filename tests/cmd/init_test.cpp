@@ -1,30 +1,39 @@
 #include <gtest/gtest.h>
 
 #include "cmd/init.hpp"
-#include "../utils/gen_key.hpp"
+#include "../util/gen_key.hpp"
+#include "../util/scoped_store_root.hpp"
 #include "lib/crypto.hpp"
 
 using namespace ck::cmd::init;
 using namespace ck::lib::crypto;
-using namespace ck::tests::utils;
+using namespace ck::tests::util;
 
 class InitTest : public ::testing::Test {
   protected: 
     std::unique_ptr<ScopedGnupgHome> gnupg_home_;
     std::string generated_fpr_;
+    std::unique_ptr<ScopedStoreRoot> store_root_;
     
     void SetUp() override {
       gnupg_home_ = std::make_unique<ScopedGnupgHome>();
       init_gpgme();
       generated_fpr_ = generate_tmp_key();
+      store_root_ = std::make_unique<ScopedStoreRoot>();
     }
     void TearDown() override {
       gnupg_home_.reset();
+      store_root_.reset();
     } 
 };
 
-TEST_F(InitTest, InitNewCryptExists) {
-  EXPECT_NO_THROW(init_crypt("test-crypt", generated_fpr_));
+TEST_F(InitTest, InitNewStoreReturnZero) {
+  EXPECT_EQ(init_store("test-store", generated_fpr_), 0);
+}
+
+TEST_F(InitTest, InitExistingStoreReturnOne) {
+  init_store("test-store", generated_fpr_);
+  EXPECT_EQ(init_store("test-store", generated_fpr_), 1);
 }
 
 // TEST_F(CryptoTest, KeyExistsTrueWhenKeyExists) {

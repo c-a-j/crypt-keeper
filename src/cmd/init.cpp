@@ -1,7 +1,6 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
 #include "cmd/init.hpp"
 #include "global.hpp"
@@ -19,7 +18,7 @@ namespace ck::cmd::init {
     return {};
   }
   
-  fs::path crypt_root() {
+  fs::path store_root() {
   #ifdef _WIN32
     auto appdata = env_or_empty("APPDATA");
     if (appdata.empty()) throw std::runtime_error("APPDATA is not set");
@@ -30,64 +29,53 @@ namespace ck::cmd::init {
     
     auto home = env_or_empty("HOME");
     if (home.empty()) throw std::runtime_error("HOME is not set");
-    return fs::path(home) / ".local" / "share" / APP_NAME;
+    return fs::path(home) / ".local" / "share" / APP_NAME_NOSPACE;
   #endif
   }
   
+  std::expected<void, InitError> error(InitErrc code, std::string msg1, std::string msg2 = {}) {
+    if (msg2.empty()) {
+      logger.error(msg1);
+    } else {
+      logger.error(msg1, msg2);
+    }
+    return std::unexpected(InitError{code, msg1, msg2});
+  }
   
-  std::expected<void, InitError> init_crypt(std::string crypt_name, std::string key_fpr) {
+  std::expected<void, InitError> create_store(std::string store_name, std::string key_fpr) {
     if (!ck::lib::crypto::public_key_exists(key_fpr)) {
-      logger.error("Public key not found: ", key_fpr);
-      return std::unexpected(InitError {
-        InitErrc::KeyNotFound,
-        "Public key not found: "
-      });
+      return error(InitErrc::KeyNotFound, "Public key not found: ", key_fpr);
     }
     
-    fs::path dir = crypt_root() / crypt_name;
+    fs::path dir = store_root() / store_name;
+    
     std::error_code ec;
     bool created = fs::create_directories(dir, ec);
     if (ec) {
-      logger.error("Failed to create crypt: ", ec.message());
-      return std::unexpected(InitError {
-        InitErrc::CreateDirectoryFailed,
-        ec.message()
-      });
+      return error(InitErrc::CreateDirectoryFailed, "Failed to create crypt: " + ec.message());
     }
     
     if (!created) {
-      std::ostringstream ss;
-      logger.error("Crypt already exists: ", dir.string());
-      return std::unexpected(InitError {
-        InitErrc::AlreadyExists,
-        "Crypt already exists"
-      });
+      return error(InitErrc::AlreadyExists, "Crypt already exists: ", dir);
     } 
     
     const fs::path gpg_id_path = dir / ".gpg-id";
     std::ofstream gpg_id_file(gpg_id_path, std::ios::out | std::ios::trunc);
     if (!gpg_id_file.is_open()) {
-      logger.error("Failed to open .gpg-id for writing: ", gpg_id_path.string());
-      return std::unexpected(InitError {
-        InitErrc::OpenGpgIdFailed,
-        "Failed to open .gpg-id for writing"
-      });
+      return error(InitErrc::OpenGpgIdFailed, "Failed to open .gpg-id for writing: ");
     }
     
     gpg_id_file << key_fpr << '\n';
     if (!gpg_id_file) {
-      logger.error("Failed to write .gpg-id: ", gpg_id_path.string());
-      return std::unexpected(InitError {
-        InitErrc::WriteGpgIdFailed,
-        "Failed to write to .gpg-id"
-      });
+      return error(InitErrc::WriteGpgIdFailed, "Failed to write .gpg-id: ");
     }
     
-    logger.success("Crypt initialized: ", dir.string());
     return {};
   }
   
-  void run_init(std::string crypt_name, std::string crypt_key) {
-    init_crypt(crypt_name, crypt_key);
+  int init_store(std::string store_name, std::string store_key) {
+    std::expected<void, InitError> r = create_store(store_name, store_key);
+    if (!r) { return 1; }
+    return 0;
   }
 }
