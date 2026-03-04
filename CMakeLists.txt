@@ -13,7 +13,7 @@ include(FetchContent)
 FetchContent_Declare(
   CLI11 
   GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git 
-  GIT_TAG v2.3.0
+  GIT_TAG v2.6.2
 )
 FetchContent_MakeAvailable(CLI11)
 
@@ -25,5 +25,8 @@ add_subdirectory(src)
 ck_apply_compiler_options(ck)
 ck_apply_compiler_options(ck_lib)
 
-enable_testing()
-add_subdirectory(tests)
+include(CTest)
+if (BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

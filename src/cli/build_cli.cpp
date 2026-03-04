@@ -11,7 +11,7 @@ namespace cmd = ck::cmd;
     std::string store = "vault.ck";
     bool verbose = false;
     
-    app.require_subcommand(0, 1);
+    app.require_subcommand(1, 1);
     
     app.description(std::string(APP_NAME) + " is a command-line tool for managing encrypted secrets.");
     app.footer("More coming soon");

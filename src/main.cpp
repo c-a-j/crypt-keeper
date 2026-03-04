@@ -1,5 +1,6 @@
 #include <CLI/CLI.hpp>
 #include <string>
+#include <iostream>
 #include "cli/build_cli.hpp"
 
 #if defined(__has_feature)
@@ -20,6 +21,10 @@ int main(int argc, char** argv) {
 
   CLI::App app{"crypt-keeper"};
   ck::cli::build_cli(app, pstore, exit_code);
+  if (argc == 1) {
+    std::cout << app.help() << '\n';
+    return 0;
+  }
   CLI11_PARSE(app, argc, argv)
   return 0;
 }
