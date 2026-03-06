@@ -1,0 +1,4 @@
+# Crypt Keeper Configurations
+default-store = "vault"
+auto-push = false
+# vault-directory = ""

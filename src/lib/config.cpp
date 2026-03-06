@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include "cmd/config.hpp"
+#include "lib/default_config.hpp"
 #include "global.hpp"
 #include "util/logger.hpp"
 
@@ -54,13 +55,8 @@ namespace ck::lib {
     }
   }
   
-  std::string print_defaults() {
-    std::ostringstream ss;
-    ss << CONFIG_HEADER << "\n"
-      << "default-store = \"valult\"" << "\n"
-      << "auto-push = false" << "\n"
-      << "vault-directory = \"\"" << "\n";
-    return ss.str();
+  void print_default() {
+    std::cout << DEFAULT_CONFIG << std::endl;
   }
   
   void create_config_file() {
@@ -68,7 +64,7 @@ namespace ck::lib {
     if (fs::exists(cfg)) return;
     
     std::ofstream out(cfg, std::ios::out | std::ios::trunc);
-    out << print_defaults() ; 
+    out << DEFAULT_CONFIG ; 
     if (!out) {
       logger.error("Failed to create config file: ", std::string(cfg));
       return;
