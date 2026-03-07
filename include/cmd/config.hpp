@@ -4,5 +4,5 @@
 
 namespace ck::cmd::config {
 using namespace ck::types;
-  void config(Config& cfg);
+  void config(Vault&, Config&);
 }

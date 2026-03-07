@@ -6,13 +6,17 @@
 #include <string>
 #include <filesystem>
 #include <cstdlib>
+#include <tuple>
 
 #include "cmd/config.hpp"
+#include "util/error.hpp"
 #include "lib/default_config.hpp"
 #include "global.hpp"
 #include "util/logger.hpp"
 
-namespace ck::lib {
+inline constexpr std::string_view GLOBAL_CONFIGS = "global";
+
+namespace ck::lib::config {
   using namespace ck::types;
   namespace fs = std::filesystem;
   using namespace ck::util::logger;
@@ -22,23 +26,22 @@ namespace ck::lib {
     return {};
   }
 
-  fs::path config_root() {
+  fs::path app_config_dir() {
+    std::string cfg_dir = env_or_empty(CONFIG_DIR_ENV_VAR.data());
+    if (!cfg_dir.empty()) return fs::path(cfg_dir);
+    
   #ifdef _WIN32
-    auto appdata = env_or_empty("APPDATA");
+    std::string appdata = env_or_empty("APPDATA");
     if (appdata.empty()) throw std::runtime_error("APPDATA is not set");
     return fs::path(appdata);
   #else
-    auto xdg = env_or_empty("XDG_CONFIG_HOME");
-    if (!xdg.empty()) return fs::path(xdg);
+    std::string xdg = env_or_empty("XDG_CONFIG_HOME");
+    if (!xdg.empty()) return fs::path(xdg) / APP_DIR;
     
     auto home = env_or_empty("HOME");
     if (home.empty()) throw std::runtime_error("HOME is not set");
-    return fs::path(home) / ".config";
+    return fs::path(home) / ".config" / APP_DIR;
   #endif
-  }
-  
-  fs::path app_config_dir() {
-    return config_root() / APP_DIR;
   }
   
   fs::path app_config_file() {
@@ -59,7 +62,44 @@ namespace ck::lib {
     std::cout << DEFAULT_CONFIG << std::endl;
   }
   
-  void create_config_file() {
+  void print_config_ln(std::string key, std::string value, std::string vault = {}) {
+    if (vault.empty()) {
+      std::cout << "[global." << key << "] = " << value << "\n";
+      return;
+    }
+    std::cout << "[vaults." << vault << "." << key << "] = " << value << "\n";
+  }
+  
+  template<typename T>
+  void print_str_fields(const T& obj, const std::string& vault = {}) {
+    for (auto& [key, member] : T::str_fields())
+      if (obj.*member) print_config_ln(std::string(key), *(obj.*member), vault);
+  }
+  template<typename T>
+  void print_bool_fields(const T& obj, const std::string& vault = {}) {
+    for (auto& [key, member] : T::bool_fields())
+      if (obj.*member) print_config_ln(std::string(key), *(obj.*member) ? "true" : "false", vault);
+  }
+  void print_config(Vault& vault, Config& cfg) {
+    if (vault.name.empty()) {
+      print_str_fields(cfg);
+      print_bool_fields(cfg);
+    }
+    
+    for (const auto& [v, ov] : cfg.overrides) {
+      if (!vault.name.empty() && v != vault.name) continue;
+      print_str_fields(ov, v);
+      print_bool_fields(ov, v);
+    }
+  }
+  
+  void set_config(Vault& vault, Config& cfg) {
+    fs::path cfg_file = app_config_file();
+    auto cfg_toml = toml::parse_file(std::string(cfg_file));
+    
+  }
+  
+  void create_default_config_file() {
     fs::path cfg = app_config_file();
     if (fs::exists(cfg)) return;
     
@@ -72,39 +112,62 @@ namespace ck::lib {
     out.close();
   }
   
-  void load_config(Config& config) {
+  void init_config_file(std::string vault, std::string vault_dir) {
+    fs::path cfg = app_config_file();
+    if (!fs::exists(cfg)) {
+      logger.error("Config file doesn't exist: ", std::string(cfg));
+      return;
+    }
+    auto tbl = toml::parse_file(cfg.string());
+    tbl[GLOBAL_CONFIGS].as_table() -> insert_or_assign("vault", vault);
+    tbl["directory"].as_table() -> insert_or_assign("directory", vault_dir);
+  }
+  
+  template<typename T>
+  void load_str_fields(T& obj, const toml::table& tbl){
+    for (auto& [key, member] : T::str_fields())
+      obj.*member = tbl[key].template value<std::string>();
+  }
+  template<typename T>
+  void load_bool_fields(T& obj, const toml::table& tbl){
+    for (auto& [key, member] : T::bool_fields())
+      obj.*member = tbl[key].template value<bool>();
+  }
+  
+  void load_config(Config& cfg) {
     fs::path cfg_file = app_config_file();
-    auto cfg = toml::parse_file("config.toml");
-    const std::string vault_from_cli = config.vault;
+    auto cfg_toml = toml::parse_file(std::string(cfg_file));
+    std::string vault_from_cli;
+    if (cfg.vault) { vault_from_cli = *cfg.vault; }
     
-    // global defaults
-    if (auto* defaults = cfg["default"].as_table()) {
-      config.vault = (*defaults)["directory"].value_or("");
-      config.directory = (*defaults)["directory"].value_or("");
-      config.auto_push = (*defaults)["auto-push"].value_or(false);
+    // parse global defaults
+    if (auto* globals = cfg_toml[GLOBAL_CONFIGS].as_table()) {
+      load_str_fields(cfg, *globals);
+      load_bool_fields(cfg, *globals);
     }
     
-    // named vault overrides: [vault.any-name]
-    if (auto* vaults = cfg["vaults"].as_table()){
+    // parse named vault overrides: [vault.any-name]
+    if (auto* vaults = cfg_toml["vaults"].as_table()){
       for (auto&& [k,n] : *vaults) {
         auto* v = n.as_table();
         if (!v) continue;
         
         ConfigOverrides ov{};
-        ov.auto_push = (*v)["auto_push"].value<bool>();
-        ov.directory = (*v)["vault-directory"].value<std::string>();
-        
-        config.overrides[std::string(k.str())] = std::move(ov);
+        load_str_fields(ov, *v);
+        load_bool_fields(ov, *v);
+        cfg.overrides[std::string(k.str())] = std::move(ov);
       }
     }
-    
+   
+    // if a specific vault is specified, apply it's overrides
     if (!vault_from_cli.empty()) {
-      auto it = config.overrides.find(vault_from_cli);
-      if (it != config.overrides.end()) {
+      auto it = cfg.overrides.find(vault_from_cli);
+      if (it != cfg.overrides.end()) {
         const auto& ov = it->second;
-        if (ov.auto_push) config.auto_push = *ov.auto_push;
-        if (ov.directory) config.directory = *ov.directory;
+        if (ov.directory) cfg.directory = ov.directory;
+        if (ov.auto_push) cfg.auto_push = ov.auto_push;
       }
     }
+
   }
 }

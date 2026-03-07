@@ -19,6 +19,9 @@ namespace ck::cmd::init {
   }
   
   fs::path store_root() {
+    std::string cfg_dir = env_or_empty(VAULT_DIR_ENV_VAR.data());
+    if (!cfg_dir.empty()) return fs::path(cfg_dir);
+    
   #ifdef _WIN32
     auto appdata = env_or_empty("APPDATA");
     if (appdata.empty()) throw std::runtime_error("APPDATA is not set");
@@ -75,7 +78,7 @@ namespace ck::cmd::init {
   
   int init_store(std::string store_name, std::string store_key) {
     std::expected<void, InitError> r = create_store(store_name, store_key);
-    if (!r) { return 1; }
+    if (!r) return 1;
     logger.success("Store initialized: ", store_name);
     return 0;
   }
