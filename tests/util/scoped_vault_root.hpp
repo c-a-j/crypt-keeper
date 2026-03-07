@@ -3,10 +3,10 @@
 #include <optional>
 
 namespace ck::tests::util {
-  class ScopedStoreRoot {
+  class ScopedVaultRoot {
     public:
-      ScopedStoreRoot(); 
-      ~ScopedStoreRoot();
+      ScopedVaultRoot(); 
+      ~ScopedVaultRoot();
       
     private:
       std::string tmp_root_;

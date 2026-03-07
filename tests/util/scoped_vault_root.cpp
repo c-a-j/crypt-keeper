@@ -3,12 +3,12 @@
 #include <gpgme.h>
 #include <gtest/gtest.h>
 
-#include "scoped_store_root.hpp"
+#include "scoped_vault_root.hpp"
 
 
 namespace ck::tests::util {
   namespace fs = std::filesystem;
-  ScopedStoreRoot::ScopedStoreRoot() {
+  ScopedVaultRoot::ScopedVaultRoot() {
     char tmpl[] = "/tmp/crypt-keeper-XXXXXX";
     char* dir = mkdtemp(tmpl);
     if (dir == nullptr) {
@@ -23,7 +23,7 @@ namespace ck::tests::util {
       throw std::runtime_error("setenv(XDG_DATA_HOME) failed");
     }
   }
-  ScopedStoreRoot::~ScopedStoreRoot() {
+  ScopedVaultRoot::~ScopedVaultRoot() {
     if (root_.has_value()) {
       setenv("XDG_DATA_HOME", root_->c_str(), 1);
     } else {

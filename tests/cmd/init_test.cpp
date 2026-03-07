@@ -2,7 +2,7 @@
 
 #include "cmd/init.hpp"
 #include "../util/gen_key.hpp"
-#include "../util/scoped_store_root.hpp"
+#include "../util/scoped_vault_root.hpp"
 #include "lib/crypto.hpp"
 #include "util/error.hpp"
 
@@ -14,13 +14,13 @@ class InitTest : public ::testing::Test {
   protected: 
     std::unique_ptr<ScopedGnupgHome> gnupg_home_;
     std::string generated_fpr_;
-    std::unique_ptr<ScopedStoreRoot> store_root_;
+    std::unique_ptr<ScopedVaultRoot> store_root_;
     
     void SetUp() override {
       gnupg_home_ = std::make_unique<ScopedGnupgHome>();
       init_gpgme();
       generated_fpr_ = generate_tmp_key();
-      store_root_ = std::make_unique<ScopedStoreRoot>();
+      store_root_ = std::make_unique<ScopedVaultRoot>();
     }
     void TearDown() override {
       gnupg_home_.reset();
