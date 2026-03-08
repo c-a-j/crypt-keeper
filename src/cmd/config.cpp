@@ -21,7 +21,7 @@ namespace ck::cmd::config {
       print_config(cfg, vault);
       return;
     } else if (set_args.size() == 2) {
-      std::cout << "setting " << set_args[0] << " to " << set_args[1] << "\n";
+      set_parameter(cfg, vault, set_args);
       return;
     } else if (set_args.size() > 2) {
       throw CLI::ValidationError("config", "too many arguments");

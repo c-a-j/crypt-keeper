@@ -123,7 +123,7 @@ namespace ck::lib::config {
     if (scope == "vaults") {
       dot = rest.find('.');
       vault_name = rest.substr(0, dot);
-      field = key.substr(dot + 1);
+      field = rest.substr(dot + 1);
     } else {
       field = rest;
     }
@@ -151,7 +151,7 @@ namespace ck::lib::config {
       }
     } else if (scope == "vaults") {
       if (auto* vaults = cfg_toml["vaults"].as_table()) {
-        if (auto* tbl = (*vaults)[vault.name].as_table()) {
+        if (auto* tbl = (*vaults)[vault_name].as_table()) {
           assign(*tbl);
         }
       }
