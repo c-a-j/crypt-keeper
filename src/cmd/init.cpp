@@ -18,11 +18,11 @@ namespace ck::cmd::init {
   using namespace ck::lib::config;
     
   void init_vault(Config& cfg, Vault& vault) {
-    if (!ck::lib::crypto::public_key_exists(vault.key_fpr)) {
-      throw Error{InitErrc::KeyNotFound, vault.key_fpr};
+    if (!ck::lib::crypto::public_key_exists(vault.key_fpr.value())) {
+      throw Error{InitErrc::KeyNotFound, vault.key_fpr.value()};
     }
     
-    fs::path dir = vault_root() / vault.name;
+    fs::path dir = vault_root() / vault.name.value();
     
     std::error_code ec;
     bool created = fs::create_directories(dir, ec);
@@ -40,7 +40,7 @@ namespace ck::cmd::init {
       throw Error{InitErrc::OpenGpgIdFailed, std::string(gpg_id_path)};
     }
     
-    gpg_id_file << vault.key_fpr << '\n';
+    gpg_id_file << vault.key_fpr.value() << '\n';
     if (!gpg_id_file) {
       throw Error{InitErrc::WriteGpgIdFailed, std::string(gpg_id_path)};
     }

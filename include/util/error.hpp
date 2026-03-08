@@ -44,9 +44,10 @@ namespace ck::util::error {
   enum class ConfigErrc {
     CreateDirectoryFailed,
     CreateConfigFailed,
+    SaveConfigFailed,
     AlreadyExists,
     DoesNotExist,
-    InvalidScope,
+    InvalidSetParameter,
     IoError,
   };
   template<>
@@ -54,9 +55,10 @@ namespace ck::util::error {
     switch (c) {
       case ConfigErrc::CreateDirectoryFailed: return "Failed to create vault: ";
       case ConfigErrc::CreateConfigFailed:    return "Failed to create conifig file: ";
+      case ConfigErrc::SaveConfigFailed:      return "Failed to save conifig file: ";
       case ConfigErrc::AlreadyExists:         return "Configuration file already exists: ";
       case ConfigErrc::DoesNotExist:          return "Configuration file not found: ";
-      case ConfigErrc::InvalidScope:          return "Invalid configuration spec: ";
+      case ConfigErrc::InvalidSetParameter:          return "Invalid configuration scope: ";
       case ConfigErrc::IoError:               return "I/O error: ";
       default:                                return "Unknown error: ";
     }

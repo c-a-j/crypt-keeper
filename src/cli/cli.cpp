@@ -47,7 +47,7 @@ using namespace ck::util::logger;
     insert -> add_option("-s,--store", vault.name, "store name");
     insert -> add_option("-k,--key", vault.key_fpr, "encryption key");
     insert -> add_option("path, -p,--path", secret.path, "secret path and name (ex cards/mybank/num") -> required();
-    insert -> callback([&] { cmd::insert::insert_secret(secret.path, vault.key_fpr); });
+    insert -> callback([&] { cmd::insert::insert_secret(secret.path, vault.key_fpr.value()); });
   }
   
   void build_get(CLI::App& app, Config& cfg, Vault& vault, Secret& secret) {

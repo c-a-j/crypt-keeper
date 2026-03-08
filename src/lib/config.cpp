@@ -75,10 +75,6 @@ namespace ck::lib::config {
     }
   }
   
-  // void print_default() {
-  //   std::cout << DEFAULT_CONFIG << std::endl;
-  // }
-  
   void print_config_ln(std::string key, std::string value, std::string vault = {}) {
     if (vault.empty()) {
       std::cout << "[global." << key << "] = " << value << "\n";
@@ -88,131 +84,145 @@ namespace ck::lib::config {
   }
   
   void print_str_fields(const VaultConfig& obj, const std::string& vault = {}) {
-    for (auto& [key, member] : VaultConfig::str_fields())
+    for (auto& [key, member] : VaultConfig::str_fields()) {
       if (obj.*member) print_config_ln(std::string(key), *(obj.*member), vault);
+    }
   }
   void print_bool_fields(const VaultConfig& obj, const std::string& vault = {}) {
-    for (auto& [key, member] : VaultConfig::bool_fields())
+    for (auto& [key, member] : VaultConfig::bool_fields()) {
       if (obj.*member) print_config_ln(std::string(key), *(obj.*member) ? "true" : "false", vault);
+    }
   }
+  
   void print_config(Config& cfg, Vault& vault) {
-    if (vault.name.empty()) {
+    if (!vault.name) {
       print_str_fields(cfg.global);
       print_bool_fields(cfg.global);
     }
     
     for (const auto& [v, ov] : cfg.overrides) {
-      if (!vault.name.empty() && v != vault.name) continue;
+      if (vault.name && v != *vault.name) continue;
       print_str_fields(ov, v);
       print_bool_fields(ov, v);
     }
+  }
+  
+  toml::table struct_to_toml(Config& cfg) {
+    toml::table cfg_toml;
+    VaultConfig& obj = cfg.global;
+    
+    cfg_toml.insert("global", toml::table{});
+    toml::table* tbl = cfg_toml[GLOBAL_CONFIGS].as_table();
+    for (auto& [key, member] : VaultConfig::str_fields()) {
+      if (obj.*member) tbl -> insert(key, *(obj.*member));
+    }
+    for (auto& [key, member] : VaultConfig::bool_fields()) {
+      if (obj.*member) tbl -> insert(key, *(obj.*member));;
+    }
+    
+    cfg_toml.insert("vaults", toml::table{});
+    toml::table* vaults = cfg_toml["vaults"].as_table();
+    for (const auto& [v, ov] : cfg.overrides) {
+      tbl = new toml::table;
+      for (auto& [key, member] : VaultConfig::str_fields()) {
+        if (ov.*member) tbl -> insert(key, *(ov.*member));
+      }
+      for (auto& [key, member] : VaultConfig::bool_fields()) {
+        if (ov.*member) tbl -> insert(key, *(ov.*member));;
+      }
+      vaults -> insert(v, *tbl);
+    }
+    return cfg_toml;
   }
   
   void set_parameter(Config& cfg, Vault& vault, std::vector<std::string> set_args) {
     if (set_args.size() < 2) return;
     const std::string& key = set_args[0];
     const std::string& val = set_args[1];
-    
-    auto dot = key.find('.');
-    std::string scope = key.substr(0, dot);
-    std::string rest = key.substr(dot + 1);
-    
-    std::string vault_name;
+    std::vector<std::string> key_parts;
+    std::stringstream ss(key);
+    std::string part;
+    std::string scope;
     std::string field;
     
-    if (scope == "vaults") {
-      dot = rest.find('.');
-      vault_name = rest.substr(0, dot);
-      field = rest.substr(dot + 1);
-    } else {
-      field = rest;
+    while (std::getline(ss, part, '.')) {
+      key_parts.push_back(part);
     }
     
-    fs::path cfg_file = app_config_file();
-    auto cfg_toml = toml::parse_file(std::string(cfg_file));
-    
-    // determine if val is a bool
-    bool is_bool = false;
-    for (auto& [k, _] : VaultConfig::bool_fields()) 
-      if (k == field) { is_bool = true; break;}
-      
-    // assignment function
-    auto assign = [&](toml::table& tbl) {
-      if (is_bool) {
-        tbl.insert_or_assign(field, val == "true" || val == "1");
-      } else {
-        tbl.insert_or_assign(field, val);
-      }
-    };
+    // when user specifies vault (ex -v vault auto_push true)
+    if (vault.name && key_parts.size() == 1) {
+      scope = "vaults";
+      field = key_parts[0];
+    // when user does not specify vault (ex vaults.vault.auto_push true)
+    } else if (!vault.name && key_parts.size() == 3) {
+      scope = key_parts[0];
+      vault.name = key_parts[1];
+      field = key_parts[2];
+    // when user modifies global settings (ex global.auto_push true)
+    } else if (!vault.name && key_parts.size() == 2) {
+      scope = key_parts[0];
+      field = key_parts[1];
+    } else {
+      ss.clear();
+      ss << "scope = " << scope << ", vault = " << *vault.name << 
+        ", field = " << field << ", val = " << val << "\n";
+      throw Error{ConfigErrc::InvalidSetParameter, ss.str()};
+    }
     
     if (scope == "global") {
-      if (auto* tbl = cfg_toml[GLOBAL_CONFIGS].as_table()) {
-        assign(*tbl);
+      VaultConfig& obj = cfg.global;
+      for (auto& [k, member] : VaultConfig::str_fields()) {
+        if (k == field) { obj.*member = val; return; }
+      }
+      for (auto& [k, member] : VaultConfig::bool_fields()) {
+        if (k == field) { obj.*member = (val == "true"); return; }
       }
     } else if (scope == "vaults") {
-      if (auto* vaults = cfg_toml["vaults"].as_table()) {
-        if (auto* tbl = (*vaults)[vault_name].as_table()) {
-          assign(*tbl);
+      for (auto& [v, ov] : cfg.overrides) {
+        if (v != *vault.name) continue;
+        for (auto& [k, member] : VaultConfig::str_fields()) {
+          if (k == field) { ov.*member = val; return; }
+        }
+        for (auto& [k, member] : VaultConfig::bool_fields()) {
+          if (k == field) { ov.*member = (val == "true"); return; }
         }
       }
     } else {
-      throw Error{ConfigErrc::InvalidScope, key};
-    }
-    
-    std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
-    out << cfg_toml << "\n";
-    if (!out) {
-      logger.error("Failed to write config file: ", std::string(cfg_file));
+      throw Error{ConfigErrc::InvalidSetParameter, scope};
     }
   }
   
-  void add_new_vault(Config& cfg, Vault& vault) {
+  void save_config(Config& cfg) {
+    toml::table cfg_toml = struct_to_toml(cfg);
     fs::path cfg_file = app_config_file();
-    auto cfg_toml = toml::parse_file(std::string(cfg_file));
-    
-    if (!cfg_toml["vaults"].as_table()) {
-      cfg_toml.insert("vaults", toml::table{});
-    }
-    
-    auto* vaults = cfg_toml["vaults"].as_table();
-    vaults -> insert(vault.name, toml::table{});
-    
     std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
     out << cfg_toml << "\n";
     if (!out) {
-      logger.error("Failed to write config file: ", std::string(cfg_file));
+      throw Error{ConfigErrc::SaveConfigFailed, std::string(cfg_file)};
     }
   }
   
-  void create_default_config(toml::table& cfg_toml, std::string default_vault) {
-    cfg_toml.insert(GLOBAL_CONFIGS, toml::table{});
-    auto* tbl = cfg_toml[GLOBAL_CONFIGS].as_table();
-    tbl -> insert("vault", default_vault);
-    tbl -> insert("directory", std::string(vault_root()));
-    tbl -> insert("auto_push", false);
-    
-    cfg_toml.insert("vaults", toml::table{});
-    tbl = cfg_toml["vaults"].as_table();
-    tbl -> insert(default_vault, toml::table{});
+  void create_default_config(Config& cfg, Vault& vault) {
+    VaultConfig& obj = cfg.global;
+    obj.vault = *vault.name;
+    obj.directory = vault_root();
+    obj.auto_push = false;
+    cfg.overrides[*vault.name] = VaultConfig{};
   }
   
   void init_config(Config& cfg, Vault& vault) {
     fs::path cfg_file = app_config_file();
+    // add new vault if config file already exists
     if (fs::exists(cfg_file)) {
-      // only add new vault to config [vaults.new-vault]
-      add_new_vault(cfg, vault);
+      load_config(cfg);
+      if (vault.name) cfg.overrides[*vault.name] = VaultConfig{};
+      save_config(cfg);
       return;
     }
     // create new config
     create_config_dir();
-    toml::table cfg_toml;
-    create_default_config(cfg_toml, vault.name);
-    
-    std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
-    out << cfg_toml << "\n"; 
-    if (!out) {
-      throw Error{ConfigErrc::CreateConfigFailed, std::string(cfg_file) };
-    }
+    create_default_config(cfg, vault);
+    save_config(cfg);
   }
   
   void load_str_fields(VaultConfig& obj, const toml::table& tbl){
@@ -232,7 +242,7 @@ namespace ck::lib::config {
     }
     auto cfg_toml = toml::parse_file(std::string(cfg_file));
     
-    // parse global defaults
+    // parse global configurations
     if (auto* globals = cfg_toml[GLOBAL_CONFIGS].as_table()) {
       load_str_fields(cfg.global, *globals);
       load_bool_fields(cfg.global, *globals);
@@ -250,17 +260,5 @@ namespace ck::lib::config {
         cfg.overrides[std::string(k.str())] = std::move(ov);
       }
     }
-   
-    // // if a specific vault is specified, apply it's overrides
-    // if (!vault_from_cli.empty()) {
-    //   auto it = cfg.overrides.find(vault_from_cli);
-    //   if (it != cfg.overrides.end()) {
-    //     const auto& ov = it->second;
-    //     for (auto& [key, member] : VaultConfig::str_fields())
-    //       if (ov.*member) cfg.global.*member = *(ov.*member);
-    //     for (auto& [key, member] : VaultConfig::bool_fields())
-    //       if (ov.*member) cfg.global.*member = *(ov.*member);
-    //   }
-    // }
   }
 }

@@ -10,9 +10,9 @@
 namespace ck::types {
   using namespace std::string_view_literals;
   struct Vault {
-    std::string name;
-    std::string key_fpr;
-    std::string directory;
+    std::optional<std::string> name;
+    std::optional<std::string> key_fpr;
+    std::optional<std::string> directory;
   };
   
   struct Secret {
@@ -23,7 +23,7 @@ namespace ck::types {
   struct VaultConfig {
     std::optional<std::string> vault;
     std::optional<std::string> directory;
-    std::optional<bool> auto_push = false;
+    std::optional<bool> auto_push;
 
     static constexpr auto str_fields() {
       return std::array{

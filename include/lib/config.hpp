@@ -10,4 +10,5 @@ using namespace ck::types;
   void load_config(Config&);
   void print_config(Config&, Vault&);
   void set_parameter(Config&, Vault&, std::vector<std::string>);
+  void save_config(Config&);
 }
