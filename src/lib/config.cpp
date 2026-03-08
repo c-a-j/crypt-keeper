@@ -75,6 +75,36 @@ namespace ck::lib::config {
     }
   }
   
+  void parse_key(ConfigKey& key) {
+    std::string part;
+    std::vector<std::string> key_parts;
+    std::stringstream ss(key.key);
+    
+    while (std::getline(ss, part, '.')) {
+      key_parts.push_back(part);
+    }
+    
+    // when user specifies vault (ex -v vault auto_push true)
+    if (key.vault && key_parts.size() == 1) {
+      key.scope = "vaults";
+      key.field = key_parts[0];
+    // when user does not specify vault (ex vaults.vault.auto_push true)
+    } else if (!key.vault && key_parts.size() == 3) {
+      key.scope = key_parts[0];
+      key.vault = key_parts[1];
+      key.field = key_parts[2];
+    // when user modifies global settings (ex global.auto_push true)
+    } else if (!key.vault && key_parts.size() == 2) {
+      key.scope = key_parts[0];
+      key.field = key_parts[1];
+    } else {
+      ss.clear();
+      ss << "scope = " << key.scope << ", vault = " << key.vault.value_or("") << 
+        ", field = " << key.field << "\n";
+      throw Error{ConfigErrc::InvalidSetParameter, ss.str()};
+    }
+  }
+  
   void print_config_ln(std::string key, std::string value, std::string vault = {}) {
     if (vault.empty()) {
       std::cout << "[global." << key << "] = " << value << "\n";
@@ -94,7 +124,14 @@ namespace ck::lib::config {
     }
   }
   
-  void print_config(Config& cfg, Vault& vault) {
+  void print_config(Config& cfg, Vault& vault, std::string key) {
+    if (!key.empty()) {
+      ConfigKey cfg_key;
+      cfg_key.key = key;
+      cfg_key.vault = vault.name;
+      parse_key(cfg_key);
+    }
+    
     if (!vault.name) {
       print_str_fields(cfg.global);
       print_bool_fields(cfg.global);
@@ -112,83 +149,60 @@ namespace ck::lib::config {
     VaultConfig& obj = cfg.global;
     
     cfg_toml.insert("global", toml::table{});
-    toml::table* tbl = cfg_toml[GLOBAL_CONFIGS].as_table();
+    toml::table* global = cfg_toml[GLOBAL_CONFIGS].as_table();
     for (auto& [key, member] : VaultConfig::str_fields()) {
-      if (obj.*member) tbl -> insert(key, *(obj.*member));
+      if (obj.*member) global -> insert(key, *(obj.*member));
     }
     for (auto& [key, member] : VaultConfig::bool_fields()) {
-      if (obj.*member) tbl -> insert(key, *(obj.*member));;
+      if (obj.*member) global -> insert(key, *(obj.*member));;
     }
     
     cfg_toml.insert("vaults", toml::table{});
     toml::table* vaults = cfg_toml["vaults"].as_table();
     for (const auto& [v, ov] : cfg.overrides) {
-      tbl = new toml::table;
+      toml::table tbl;
       for (auto& [key, member] : VaultConfig::str_fields()) {
-        if (ov.*member) tbl -> insert(key, *(ov.*member));
+        if (ov.*member) tbl.insert(key, *(ov.*member));
       }
       for (auto& [key, member] : VaultConfig::bool_fields()) {
-        if (ov.*member) tbl -> insert(key, *(ov.*member));;
+        if (ov.*member) tbl.insert(key, *(ov.*member));;
       }
-      vaults -> insert(v, *tbl);
+      vaults -> insert(v, tbl);
     }
     return cfg_toml;
   }
+  
   
   void set_parameter(Config& cfg, Vault& vault, std::vector<std::string> set_args) {
     if (set_args.size() < 2) return;
     const std::string& key = set_args[0];
     const std::string& val = set_args[1];
-    std::vector<std::string> key_parts;
-    std::stringstream ss(key);
-    std::string part;
-    std::string scope;
-    std::string field;
     
-    while (std::getline(ss, part, '.')) {
-      key_parts.push_back(part);
-    }
+    ConfigKey cfg_key;
+    cfg_key.key = key;
+    cfg_key.vault = vault.name;
+    parse_key(cfg_key);
     
-    // when user specifies vault (ex -v vault auto_push true)
-    if (vault.name && key_parts.size() == 1) {
-      scope = "vaults";
-      field = key_parts[0];
-    // when user does not specify vault (ex vaults.vault.auto_push true)
-    } else if (!vault.name && key_parts.size() == 3) {
-      scope = key_parts[0];
-      vault.name = key_parts[1];
-      field = key_parts[2];
-    // when user modifies global settings (ex global.auto_push true)
-    } else if (!vault.name && key_parts.size() == 2) {
-      scope = key_parts[0];
-      field = key_parts[1];
-    } else {
-      ss.clear();
-      ss << "scope = " << scope << ", vault = " << *vault.name << 
-        ", field = " << field << ", val = " << val << "\n";
-      throw Error{ConfigErrc::InvalidSetParameter, ss.str()};
-    }
-    
-    if (scope == "global") {
+    if (cfg_key.scope == "global") {
       VaultConfig& obj = cfg.global;
       for (auto& [k, member] : VaultConfig::str_fields()) {
-        if (k == field) { obj.*member = val; return; }
+        if (k == cfg_key.field) { obj.*member = val; return; }
       }
       for (auto& [k, member] : VaultConfig::bool_fields()) {
-        if (k == field) { obj.*member = (val == "true"); return; }
+        if (k == cfg_key.field) { obj.*member = (val == "true"); return; }
       }
-    } else if (scope == "vaults") {
+    } else if (cfg_key.scope == "vaults") {
       for (auto& [v, ov] : cfg.overrides) {
-        if (v != *vault.name) continue;
+        if (v != cfg_key.vault) continue;
         for (auto& [k, member] : VaultConfig::str_fields()) {
-          if (k == field) { ov.*member = val; return; }
+          if (k == cfg_key.field) { ov.*member = val; return; }
         }
         for (auto& [k, member] : VaultConfig::bool_fields()) {
-          if (k == field) { ov.*member = (val == "true"); return; }
+          if (k == cfg_key.field) { ov.*member = (val == "true"); return; }
         }
       }
     } else {
-      throw Error{ConfigErrc::InvalidSetParameter, scope};
+      throw Error{ConfigErrc::InvalidSetParameter, cfg_key.scope};
     }
   }
   

@@ -58,7 +58,7 @@ namespace ck::util::error {
       case ConfigErrc::SaveConfigFailed:      return "Failed to save conifig file: ";
       case ConfigErrc::AlreadyExists:         return "Configuration file already exists: ";
       case ConfigErrc::DoesNotExist:          return "Configuration file not found: ";
-      case ConfigErrc::InvalidSetParameter:          return "Invalid configuration scope: ";
+      case ConfigErrc::InvalidSetParameter:   return "Invalid configuration scope: ";
       case ConfigErrc::IoError:               return "I/O error: ";
       default:                                return "Unknown error: ";
     }
