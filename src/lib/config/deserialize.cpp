@@ -1,6 +1,6 @@
+#include "toml++/toml.hpp"
 #include <string>
 #include <filesystem>
-#include "toml++/toml.hpp"
 
 #include "lib/config/path.hpp"
 #include "lib/types.hpp"
@@ -13,7 +13,7 @@ namespace ck::lib::config {
   namespace fs = std::filesystem;
   using namespace ck::util::logger;
 
-  void load_fields(VaultConfig& obj, const toml::table& tbl) {
+  void parse_fields(VaultConfig& obj, const toml::table& tbl) {
     for (const auto& field : VaultConfig::fields()) {
       std::visit([&](auto member) {
         using M = decltype(member);
@@ -26,7 +26,7 @@ namespace ck::lib::config {
     }
   }
   
-  void load_config(Config& cfg) {
+  void deserialize(Config& cfg) {
     fs::path cfg_file = app_config_file();
     if (!fs::exists(cfg_file)) {
       logger.error("Config file not found: ", std::string(cfg_file));
@@ -36,7 +36,7 @@ namespace ck::lib::config {
     
     // parse global configurations
     if (auto* globals = cfg_toml[GLOBAL_CONFIGS].as_table()) {
-      load_fields(cfg.global, *globals);
+      parse_fields(cfg.global, *globals);
     }
     
     // parse named vault overrides: [vault.any-name]
@@ -46,7 +46,7 @@ namespace ck::lib::config {
         if (!v) continue;
         
         VaultConfig ov{};
-        load_fields(ov, *v);
+        parse_fields(ov, *v);
         cfg.overrides[std::string(k.str())] = std::move(ov);
       }
     }

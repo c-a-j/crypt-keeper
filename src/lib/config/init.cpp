@@ -2,7 +2,7 @@
 
 #include "lib/types.hpp"
 #include "lib/config/path.hpp"
-#include "lib/config/load.hpp"
+#include "lib/config/deserialize.hpp"
 #include "lib/config/save.hpp"
 
 inline constexpr std::string_view GLOBAL_CONFIGS = "global";
@@ -23,7 +23,7 @@ namespace ck::lib::config {
     fs::path cfg_file = app_config_file();
     // add new vault if config file already exists
     if (fs::exists(cfg_file)) {
-      load_config(cfg);
+      deserialize(cfg);
       if (vault.name) cfg.overrides[*vault.name] = VaultConfig{};
       save_config(cfg);
       return;

@@ -2,7 +2,7 @@
 
 #include "cmd/config.hpp"
 #include "lib/types.hpp"
-#include "lib/config/load.hpp"
+#include "lib/config/deserialize.hpp"
 #include "lib/config/print.hpp"
 #include "lib/config/set.hpp"
 #include "lib/config/save.hpp"
@@ -13,7 +13,7 @@ using namespace ck::types;
   using namespace ck::lib::config;
   
   void config(Config& cfg, Vault& vault, std::vector<std::string>& set_args) {
-    load_config(cfg);
+    deserialize(cfg);
     
     if (set_args.size() == 0) {
       print_config(cfg, vault);

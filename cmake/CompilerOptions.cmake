@@ -18,7 +18,7 @@ function(ck_apply_compiler_options target)
     endif()
     
     if (CK_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_compile_options(${target} PRIVATE 
+      target_compile_options(${target} PRIVATE
         -fsanitize=address,undefined 
         -fno-omit-frame-pointer
         -fno-sanitize-recover=all
