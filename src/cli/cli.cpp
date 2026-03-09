@@ -5,7 +5,7 @@
 #include "cmd/config.hpp"
 #include "cli/cli.hpp"
 #include "lib/types.hpp"
-#include "lib/config.hpp"
+#include "lib/config/init.hpp"
 #include "global.hpp"
 #include "util/logger.hpp"
 

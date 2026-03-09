@@ -1,8 +1,4 @@
-add_library(ck_lib STATIC
-  lib/crypto.cpp
-  lib/index.cpp
-  lib/config.cpp
-)
+add_library(ck_lib STATIC)
 add_executable(ck main.cpp)
 
 add_subdirectory(lib)

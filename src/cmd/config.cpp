@@ -2,13 +2,16 @@
 #include <iostream>
 
 #include "cmd/config.hpp"
-#include "util/logger.hpp"
 #include "lib/types.hpp"
-#include "lib/config.hpp"
+#include "lib/config/load.hpp"
+#include "lib/config/print.hpp"
+#include "lib/config/init.hpp"
+#include "lib/config/set.hpp"
+#include "lib/config/save.hpp"
+
 
 namespace ck::cmd::config {
-  using namespace ck::util::logger;
-  using namespace ck::types;
+using namespace ck::types;
   using namespace ck::lib::config;
   
   void config(Config& cfg, Vault& vault, std::vector<std::string>& set_args) {

@@ -6,7 +6,7 @@
 #include "global.hpp"
 #include "util/logger.hpp"
 #include "lib/crypto.hpp"
-#include "lib/config.hpp"
+#include "lib/config/path.hpp"
 #include "util/error.hpp"
 
 

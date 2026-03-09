@@ -11,7 +11,7 @@ configure sanitizers="OFF" tests="OFF":
   cmake -S . -B {{ build_dir }} -DCMAKE_CXX_COMPILER=clang++ -DCK_ENABLE_SANITIZERS={{ sanitizers }} -DCMAKE_BUILD_TYPE={{ build_type }} -DBUILD_TESTING={{ tests }}
 
 build tests="OFF": (configure "ON" (tests))
-  cmake --build {{ build_dir }}
+  cmake --build {{ build_dir }} -- -j$(nproc)
 
 release: (configure ("OFF"))
   cmake --build {{ build_dir }}
