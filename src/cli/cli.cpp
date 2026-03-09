@@ -5,6 +5,7 @@
 #include "cmd/config.hpp"
 #include "cli/cli.hpp"
 #include "lib/types.hpp"
+#include "lib/wisper.hpp"
 #include "lib/config/init.hpp"
 #include "lib/config/deserialize.hpp"
 #include "lib/config/active.hpp"
@@ -53,6 +54,7 @@ using namespace ck::types;
     insert -> callback([&] { 
       lib::config::deserialize(cfg);
       VaultConfig vcfg = lib::config::get_active_config(cfg, vault);
+      lib::wisper(secret);
       cmd::insert::insert(vcfg, secret); 
     });
   }

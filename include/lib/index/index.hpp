@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 
+#include "lib/types.hpp"
+
 namespace ck::lib::index {
-  void insert(std::string path, std::string key_fpr);
+  using namespace ck::types;
+  void insert(const VaultConfig& cfg, const Secret& secret);
 }

@@ -16,7 +16,8 @@ namespace ck::types {
   
   struct Secret {
     std::string path;
-    std::string key_fpr;
+    std::string value;
+    std::optional<std::string> key_fpr;
   };
 
   struct VaultConfig {
