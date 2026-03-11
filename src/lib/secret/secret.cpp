@@ -67,6 +67,4 @@ namespace ck::secret {
     std::string foo = uuid_v4();
     std::cout << foo << "\n";
   };
-  
-  
 }

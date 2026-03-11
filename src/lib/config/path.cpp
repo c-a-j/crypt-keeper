@@ -11,7 +11,9 @@ inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 // path functions
 namespace ck::config {
   namespace fs = std::filesystem;
-  using namespace ck::util::error;
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
 
   static std::string env_or_empty(const char* name) {
     if (const char* value = std::getenv(name)) return value;
@@ -63,7 +65,7 @@ namespace ck::config {
     std::error_code ec;
     std::filesystem::create_directories(dir, ec);
     if (ec) {
-      throw Error{ConfigErrc::CreateDirectoryFailed, std::string(dir) };
+      throw Error<ConfigErrc>{CreateDirectoryFailed, std::string(dir) };
     }
   }
 }

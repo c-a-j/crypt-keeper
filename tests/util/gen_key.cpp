@@ -4,11 +4,15 @@
 #include <gtest/gtest.h>
 
 #include "lib/crypto/crypto.hpp"
+#include "util/error.hpp"
 #include "gen_key.hpp"
 
 using namespace ck::crypto;
 
 namespace fs = std::filesystem;
+using ck::util::error::Error;
+using ck::util::error::CryptoErrc;
+using enum ck::util::error::CryptoErrc;
 
 namespace ck::tests::util {
   ScopedGnupgHome::ScopedGnupgHome() {
@@ -56,13 +60,13 @@ namespace ck::tests::util {
     gpgme_error_t err = gpgme_new(&ctx);
     if (err) {
       gpgme_release(ctx);
-      throw_gpgme_error("gpgme_new failed", gpgme_strerror(err));
+      throw Error<CryptoErrc>{GpgmeNewFailed, gpgme_strerror(err)};
     }
     
     err = gpgme_set_protocol(ctx, GPGME_PROTOCOL_OpenPGP);
     if (err) {
       gpgme_release(ctx);
-      throw_gpgme_error("gpgme_set_protocol failed", gpgme_strerror(err));
+      throw Error<CryptoErrc>{GpgmeSetProtocolFailed, gpgme_strerror(err)};
     }
     
     // %no-protection keeps the test key unprotected so generation is non-interactive.
@@ -82,13 +86,13 @@ namespace ck::tests::util {
     err = gpgme_op_genkey(ctx, params, nullptr, nullptr);
     if (err) {
       gpgme_release(ctx);
-      throw_gpgme_error("gpgme_op_genkey failed", gpgme_strerror(err));
+      throw Error<CryptoErrc>{GpgmeOpGenKeyFailed, gpgme_strerror(err)};
     }
     
     gpgme_genkey_result_t result = gpgme_op_genkey_result(ctx);
     if (result == nullptr || result->fpr == nullptr) {
       gpgme_release(ctx);
-      throw_gpgme_error("gpgme_op_genkey_result missing fingerprint", gpgme_strerror(err));
+      throw Error<CryptoErrc>{GpgmeOpGenKeyResultFailed, gpgme_strerror(err)};
     }
     
     std::string fpr = result->fpr;

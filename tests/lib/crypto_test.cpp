@@ -27,11 +27,13 @@ TEST_F(CryptoTest, InitGgpmeSucceeds) {
 }
 
 TEST_F(CryptoTest, KeyExistsReturnTrue) {
-  EXPECT_TRUE(key_exists(generated_fpr_, true));
+  EXPECT_TRUE(public_key_exists(generated_fpr_));
+  EXPECT_TRUE(private_key_exists(generated_fpr_));
 }
 
 TEST_F(CryptoTest, KeyNotExistsReturnFalse) {
   std::string fpr = generated_fpr_;
   gnupg_home_.reset();
-  EXPECT_FALSE(key_exists(fpr, true));
+  EXPECT_FALSE(public_key_exists(fpr));
+  EXPECT_FALSE(private_key_exists(fpr));
 }

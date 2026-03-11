@@ -7,7 +7,9 @@
 #include "util/error.hpp"
 
 namespace ck::config {
-  using namespace ck::util::error;
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
   
   static std::optional<bool> parse_bool(std::string_view v) {
     if (v == "true") return true;
@@ -40,7 +42,7 @@ namespace ck::config {
         auto b = parse_bool(val);
         if (!b) {
           std::string s = std::string(field.key) + " = " + std::string(val);
-          throw Error{ConfigErrc::InvalidSetParameter, s};
+          throw Error<ConfigErrc>{InvalidSetParameter, s};
         }
         obj.*member = *b;
       }
@@ -60,7 +62,7 @@ namespace ck::config {
     VaultConfig* target = resolve_target(cfg, cfg_key);
     const auto* field = find_field(*cfg_key.field);
     if (!target || !field) {
-      throw Error{ConfigErrc::InvalidSetParameter, *cfg_key.scope};
+      throw Error<ConfigErrc>{InvalidSetParameter, *cfg_key.scope};
     }
     set_field(*target, *field, val);
   }

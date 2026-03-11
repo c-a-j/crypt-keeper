@@ -13,7 +13,9 @@ inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 
 namespace ck::config {
   namespace fs = std::filesystem;
-  using namespace ck::util::error;
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
 
   void save_config(Config& cfg) {
     toml::table cfg_toml = serialize(cfg);
@@ -21,7 +23,7 @@ namespace ck::config {
     std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
     out << cfg_toml << "\n";
     if (!out) {
-      throw Error{ConfigErrc::SaveConfigFailed, std::string(cfg_file)};
+      throw Error<ConfigErrc>{SaveConfigFailed, std::string(cfg_file)};
     }
   }
 }

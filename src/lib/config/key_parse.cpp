@@ -7,7 +7,9 @@
 #include "util/error.hpp"
 
 namespace ck::config {
-  using namespace ck::util::error;
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
 
   void parse_key(ConfigKey& cfg_key) {
     std::string part;
@@ -35,7 +37,7 @@ namespace ck::config {
       ss.clear();
       ss << "scope = " << cfg_key.scope.value_or("") << ", vault = " << cfg_key.vault.value_or("") << 
         ", field = " << cfg_key.field.value_or("") << "\n";
-      throw Error{ConfigErrc::InvalidSetParameter, ss.str()};
+      throw Error<ConfigErrc>{InvalidSetParameter, ss.str()};
     }
   }
 }
