@@ -2,7 +2,7 @@
 
 #include "lib/types.hpp"
 
-namespace ck::lib {
-  using namespace ck::types;
+namespace ck::secret {
+  using namespace ck::secret;
   void wisper(Secret&);
 }

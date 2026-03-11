@@ -5,16 +5,14 @@
 #include "cmd/config.hpp"
 #include "cli/cli.hpp"
 #include "lib/types.hpp"
-#include "lib/wisper.hpp"
+#include "lib/input/wisper.hpp"
 #include "lib/config/init.hpp"
 #include "lib/config/deserialize.hpp"
 #include "lib/config/active.hpp"
 #include "global.hpp"
 
 namespace ck::cli {
-namespace cmd = ck::cmd;
-namespace lib = ck::lib;
-using namespace ck::types;
+using namespace ck;
   void build_cli(CLI::App& app) {
     // bool verbose = false;
     // app.add_option("-v, --verbose", verbose, "Path verbose output");
@@ -31,8 +29,8 @@ using namespace ck::types;
     config -> add_option("args", set_args, "Key [value]");
     config -> add_option("-v, --vault", vault.name, "Set configs for a specific vault");
     config -> callback([&] { 
-      lib::config::deserialize(cfg); 
-      cmd::config::config(cfg, vault, set_args); 
+      config::deserialize(cfg); 
+      config::config(cfg, vault, set_args); 
     });
   }
     
@@ -41,8 +39,8 @@ using namespace ck::types;
     init -> add_option("-v,--vault", vault.name, "vault name") -> required();
     init -> add_option("-k,--key", vault.key_fpr, "vault key") -> required();
     init -> callback([&] { 
-      lib::config::init_config(cfg, vault);
-      cmd::init::init_vault(cfg, vault); 
+      config::init_config(cfg, vault);
+      init::init_vault(cfg, vault); 
     });
   }
     
@@ -52,10 +50,10 @@ using namespace ck::types;
     insert -> add_option("-k,--key", secret.key_fpr, "encryption key");
     insert -> add_option("path, -p,--path", secret.path, "secret path and name (ex cards/mybank/num") -> required();
     insert -> callback([&] { 
-      lib::config::deserialize(cfg);
-      VaultConfig vcfg = lib::config::get_active_config(cfg, vault);
-      lib::wisper(secret);
-      cmd::insert::insert(vcfg, secret); 
+      config::deserialize(cfg);
+      VaultConfig vcfg = config::get_active_config(cfg, vault);
+      secret::wisper(secret);
+      insert::insert(vcfg, secret); 
     });
   }
   

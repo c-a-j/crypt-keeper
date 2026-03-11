@@ -6,8 +6,7 @@
 #include "lib/types.hpp"
 #include "lib/config/key_parse.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   // using namespace ck::util::error;
 
   void print_config_ln(

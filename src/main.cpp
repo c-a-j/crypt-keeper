@@ -20,9 +20,9 @@ extern "C" const char* __asan_default_options() {
 #endif
 
 int main(int argc, char** argv) {
-  ck::types::Vault vault = {};
-  ck::types::Secret secret = {};
-  ck::types::Config cfg = {};
+  ck::config::Vault vault = {};
+  ck::secret::Secret secret = {};
+  ck::config::Config cfg = {};
   std::vector<std::string> set_args;
 
   CLI::App app{"crypt-keeper"};

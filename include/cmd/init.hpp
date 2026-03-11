@@ -2,7 +2,7 @@
 
 #include "lib/types.hpp"
 
-namespace ck::cmd::init {
-using namespace ck::types;
+namespace ck::init {
+using namespace ck::config;
   void init_vault(Config&, Vault&);
 }

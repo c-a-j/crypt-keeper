@@ -9,13 +9,13 @@
 
 
 
-namespace ck::cmd::init {
+namespace ck::init {
   namespace fs = std::filesystem;
   using namespace ck::util::error;
-  using namespace ck::lib::config;
+  using namespace ck::config;
     
   void init_vault(Config& cfg, Vault& vault) {
-    if (!ck::lib::crypto::public_key_exists(vault.key_fpr.value())) {
+    if (!ck::crypto::public_key_exists(vault.key_fpr.value())) {
       throw Error{InitErrc::KeyNotFound, vault.key_fpr.value()};
     }
     

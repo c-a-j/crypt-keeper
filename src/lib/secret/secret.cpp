@@ -6,8 +6,8 @@
 #include "lib/types.hpp"
 #include "lib/secret/secret.hpp"
 
-namespace ck::lib::secret { 
-  using namespace ck::types;
+namespace ck::secret { 
+  using namespace ck::config;
   using namespace ck::util::logger;
 
   std::vector<std::string> parse_path(const Secret& secret) {
@@ -17,11 +17,14 @@ namespace ck::lib::secret {
     
   
     while (std::getline(ss, part, '/')) {
+      if (part == "" || part.empty()) { continue; }
       path_parts.push_back(part);
     }
     
     return(path_parts);
   };
+  
+  void create_index_file() {};
 
   void serialize() {};
   

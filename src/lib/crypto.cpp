@@ -2,7 +2,7 @@
 #include <gpgme.h>
 #include <stdexcept>
 
-namespace ck::lib::crypto {
+namespace ck::crypto {
   void throw_gpgme_error(const std::string& msg, const std::string& gpgme_err) {
     throw std::runtime_error(msg + std::string(": ") + gpgme_err);
   }

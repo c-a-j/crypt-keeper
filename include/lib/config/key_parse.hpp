@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
 #include <optional>
+#include "lib/types.hpp"
 
-namespace ck::lib::config {
+namespace ck::config {
   struct ConfigKey {
     std::optional<std::string> key;
     std::optional<std::string> scope;

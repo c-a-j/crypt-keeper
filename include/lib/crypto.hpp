@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace ck::lib::crypto {
+namespace ck::crypto {
   void throw_gpgme_error(const std::string& msg, const std::string& gpgme_err);
   std::string gen_key();
   bool key_exists(const std::string&, bool);

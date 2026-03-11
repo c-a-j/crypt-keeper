@@ -3,7 +3,8 @@
 #include "lib/types.hpp"
 
 namespace ck::cli {
-using namespace ck::types;
+using namespace ck::config;
+using namespace ck::secret;
   void build_cli(CLI::App&);
   void build_config(CLI::App&, Config&, Vault&, std::vector<std::string>&);
   void build_init(CLI::App&, Config&, Vault&);

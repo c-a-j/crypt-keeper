@@ -3,7 +3,7 @@
 
 #include "lib/types.hpp"
 
-namespace ck::lib::secret {
-  using namespace ck::types;
+namespace ck::secret {
+  using namespace ck::config;
   void insert(const VaultConfig& cfg, const Secret& secret);
 }

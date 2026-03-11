@@ -1,7 +1,6 @@
 #pragma once
 #include "../types.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   void save_config(Config& cfg);
 }

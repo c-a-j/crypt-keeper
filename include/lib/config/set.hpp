@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-namespace ck::lib::config {
-  using namespace ck::types;
-  
+namespace ck::config {
   void set_parameter(Config& cfg, Vault& vault, std::vector<std::string> set_args);
 }

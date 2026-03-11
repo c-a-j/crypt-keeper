@@ -6,7 +6,7 @@
 #include "lib/config/key_parse.hpp"
 #include "util/error.hpp"
 
-namespace ck::lib::config {
+namespace ck::config {
   using namespace ck::util::error;
 
   void parse_key(ConfigKey& cfg_key) {

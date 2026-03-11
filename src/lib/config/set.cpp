@@ -6,8 +6,7 @@
 #include "lib/config/key_parse.hpp"
 #include "util/error.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   using namespace ck::util::error;
   
   static std::optional<bool> parse_bool(std::string_view v) {

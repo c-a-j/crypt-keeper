@@ -12,8 +12,8 @@
 #include <unistd.h>
 #endif
 
-namespace ck::lib {
-  using namespace ck::types;
+namespace ck::secret {
+  using namespace ck::config;
   using namespace ck::util::logger;
 
 #ifndef _WIN32

@@ -1,9 +1,6 @@
 #pragma once
 #include "lib/types.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
-
-  // void load_fields(VaultConfig& obj, const toml::table& tbl);
+namespace ck::config {
   void deserialize(Config& cfg);
 }

@@ -6,7 +6,7 @@
 #include "lib/crypto.hpp"
 #include "gen_key.hpp"
 
-using namespace ck::lib::crypto;
+using namespace ck::crypto;
 
 namespace fs = std::filesystem;
 

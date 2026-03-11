@@ -4,7 +4,6 @@
 #include <string>
 #include "lib/types.hpp"
 
-namespace ck::cmd::config {
-using namespace ck::types;
+namespace ck::config {
   void config(Config&, Vault&, std::vector<std::string>&);
 }

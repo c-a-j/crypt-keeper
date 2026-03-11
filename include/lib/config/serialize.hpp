@@ -3,7 +3,6 @@
 
 #include "lib/types.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   toml::table serialize(const Config&);
 }

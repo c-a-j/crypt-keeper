@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-namespace ck::cmd::insert {
-  using namespace ck::types;
+namespace ck::insert {
+  using namespace ck::config;
   void insert(const VaultConfig& cfg, const Secret& secret) {
-    ck::lib::secret::insert(cfg, secret);
+    ck::secret::insert(cfg, secret);
   }
 }

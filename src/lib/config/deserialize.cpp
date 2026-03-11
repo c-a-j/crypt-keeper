@@ -8,8 +8,7 @@
 
 inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   namespace fs = std::filesystem;
   using namespace ck::util::logger;
 

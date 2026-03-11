@@ -3,9 +3,7 @@
 #include <string>
 
 // print funcs
-namespace ck::lib::config {
-  using namespace ck::types;
-  
+namespace ck::config {
   void print_config(const Config& cfg, const Vault& vault);
   void print_parameter(const Config& cfg, const Vault& vault, const std::string& key);
 }

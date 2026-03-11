@@ -7,8 +7,7 @@
 
 inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   namespace fs = std::filesystem;
 
   void create_default_config(Config& cfg, Vault& vault) {

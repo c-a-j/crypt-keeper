@@ -1,7 +1,6 @@
 #include "lib/types.hpp"
 
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   
   void apply_overrides(VaultConfig& active, const VaultConfig& overrides) {
     for (const auto& field : VaultConfig::fields()) {

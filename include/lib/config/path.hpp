@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace ck::lib::config {
+namespace ck::config {
   namespace fs = std::filesystem;
 
   fs::path vault_root();

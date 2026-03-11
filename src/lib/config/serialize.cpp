@@ -5,8 +5,7 @@
 inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 
 // serialize
-namespace ck::lib::config {
-  using namespace ck::types;
+namespace ck::config {
   void insert_fields(const VaultConfig& obj, toml::table& tbl) {
     for (const auto& field : VaultConfig::fields()) {
       std::visit([&](auto member) {

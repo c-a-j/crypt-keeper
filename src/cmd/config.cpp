@@ -7,10 +7,7 @@
 #include "lib/config/save.hpp"
 
 
-namespace ck::cmd::config {
-using namespace ck::types;
-  using namespace ck::lib::config;
-  
+namespace ck::config {
   void config(Config& cfg, Vault& vault, std::vector<std::string>& set_args) {
     if (set_args.size() == 0) {
       print_config(cfg, vault);

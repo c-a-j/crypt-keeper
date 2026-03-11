@@ -3,10 +3,12 @@
 #include <optional>
 #include <unordered_map>
 #include <array>
+#include <vector>
 #include <variant>
+#include <map>
 
 
-namespace ck::types {
+namespace ck::config {
   using namespace std::string_view_literals;
   struct Vault {
     std::optional<std::string> name;
@@ -14,12 +16,6 @@ namespace ck::types {
     std::optional<std::string> directory;
   };
   
-  struct Secret {
-    std::string path;
-    std::string value;
-    std::optional<std::string> key_fpr;
-  };
-
   struct VaultConfig {
     std::optional<std::string> vault;
     std::optional<std::string> directory;
@@ -47,5 +43,29 @@ namespace ck::types {
   struct Config {
     VaultConfig global;
     std::unordered_map<std::string, VaultConfig> overrides;
+  };
+}
+namespace ck::secret {
+  struct Secret {
+    std::string path;
+    std::string value;
+    std::optional<std::string> key_fpr;
+  };
+}
+
+namespace ck::secret::index {
+  struct IndexEntry {
+    std::vector<std::string> path;
+    std::string uuid;
+  };
+  
+  struct Node {
+    std::optional<std::string> uuid;
+    std::map<std::string, Node> children;
+  };
+  
+  struct Index {
+    std::vector<IndexEntry> entries;
+    Node root;
   };
 }
