@@ -66,5 +66,15 @@ namespace ck::secret {
     create_index_file(cfg);
     std::string foo = uuid_v4();
     std::cout << foo << "\n";
+    
+    PwSpec spec;
+    spec.length = 20;
+    spec.nupp = 5;
+    spec.nlow = 5;
+    spec.nnum = 5;
+    spec.nsym = 5;
+    
+    std::string pass = pwgen(spec);
+    std::cout << pass << "\n";
   };
 }

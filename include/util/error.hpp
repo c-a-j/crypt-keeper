@@ -72,6 +72,7 @@ namespace ck::util::error {
       GpgmeSetProtocolFailed,
       GpgmeOpGenKeyFailed,
       GpgmeOpGenKeyResultFailed,
+      InvalidPwSpec,
     };
     template<>
     inline std::string_view Error<CryptoErrc>::label(CryptoErrc c) {
@@ -83,6 +84,7 @@ namespace ck::util::error {
         case CryptoErrc::GpgmeSetProtocolFailed:    return "gpgme_set_protocol failure: ";
         case CryptoErrc::GpgmeOpGenKeyFailed:       return "gpgme_op_genkey failure: ";
         case CryptoErrc::GpgmeOpGenKeyResultFailed: return "gpgme_op_genkey_result failure: ";
+        case CryptoErrc::InvalidPwSpec:             return "invalid password specification: ";
         default:                                    return "Unknown error: ";
       }
     }
