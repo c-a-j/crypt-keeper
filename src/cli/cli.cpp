@@ -48,11 +48,12 @@ using namespace ck;
     auto* insert = app.add_subcommand("insert", "insert a new secret");
     insert -> add_option("-v,--vault", vault.name, "store name");
     insert -> add_option("-k,--key", secret.key_fpr, "encryption key");
+    insert -> add_flag("--pwgen", secret.pwgen, "insert a randomly generated password");
     insert -> add_option("path, -p,--path", secret.path, "secret path and name (ex cards/mybank/num") -> required();
     insert -> callback([&] { 
       config::deserialize(cfg);
       VaultConfig vcfg = config::get_active_config(cfg, vault);
-      secret::wisper(secret);
+      // secret::wisper(secret);
       insert::insert(vcfg, secret); 
     });
   }

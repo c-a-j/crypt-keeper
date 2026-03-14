@@ -50,22 +50,28 @@ namespace ck::secret {
     std::string path;
     std::string value;
     std::optional<std::string> key_fpr;
+    bool pwgen = false;
   };
 }
 
 namespace ck::secret::index {
-  struct IndexEntry {
+  struct IndexObj {
     std::vector<std::string> path;
     std::string uuid;
+    std::optional<std::string> key_fpr;
+  };
+  
+  struct Entry {
+    std::string uuid;
+    std::optional<std::string> key_fpr;
   };
   
   struct Node {
-    std::optional<std::string> uuid;
-    std::map<std::string, Node> children;
+    std::optional<Entry> entry;
+    std::unordered_map<std::string, Node> children;
   };
   
   struct Index {
-    std::vector<IndexEntry> entries;
     Node root;
   };
 }
