@@ -12,4 +12,5 @@ target_sources(ck_lib PRIVATE
     config/save.cpp
     input/wisper.cpp
     index/index.cpp
+    index/theme.cpp
 )

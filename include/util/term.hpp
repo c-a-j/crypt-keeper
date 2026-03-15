@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace ck::util::term {
   enum class Color {
@@ -15,8 +16,16 @@ namespace ck::util::term {
     Purple,
     Reset
   };
+  
+  enum class Style {
+    Normal,
+    Bold,
+    Faint,
+    Italic,
+    Underline
+  };
 
-  inline const char* code(Color c) {
+  inline const char* color_code(Color c) {
     switch (c) {
       case Color::Gray:       return "38;2;146;131;116";
       case Color::Red:        return "38;2;251;73;52";
@@ -31,14 +40,27 @@ namespace ck::util::term {
     }
     return "";
   }
-
-  inline std::string ansi(Color c, bool bold = false) {
-    if (c == Color::Default) { return ""; }
-    std::string out = "\033[";
-    if (bold && c != Color::Reset) {
-      out += "1;";
+  
+  inline const char* style_code(Style s) {
+    switch (s) {
+      case Style::Normal:     return "0";
+      case Style::Bold:       return "1;";
+      case Style::Faint:      return "2;";
+      case Style::Italic:     return "3;";
+      case Style::Underline:  return "4;";
     }
-    out += code(c);
+    return "";
+  }
+
+  inline std::string ansi(Color color, std::vector<Style> style = {}) {
+    if (color == Color::Default) { return ""; }
+    std::string out = "\033[";
+    
+    for (auto s : style) {
+      out += style_code(s);
+    }
+    
+    out += color_code(color);
     out += "m";
     return out;
   }
