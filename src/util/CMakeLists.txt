@@ -1,3 +1,4 @@
 target_sources(ck PRIVATE 
-  logger.cpp
+  logger/logger.cpp
+  logger/theme.cpp
 )

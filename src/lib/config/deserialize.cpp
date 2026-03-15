@@ -4,7 +4,7 @@
 
 #include "lib/config/path.hpp"
 #include "lib/types.hpp"
-#include "util/logger.hpp"
+#include "util/logger/logger.hpp"
 
 inline constexpr std::string_view GLOBAL_CONFIGS = "global";
 

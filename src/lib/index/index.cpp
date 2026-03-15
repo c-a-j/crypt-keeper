@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "util/logger.hpp"
+#include "util/logger/logger.hpp"
 #include "lib/index/theme.hpp"
 #include "util/error.hpp"
 #include "lib/types.hpp"
@@ -197,10 +197,10 @@ namespace ck::index {
         << get_scheme_ansi(Line)
         << prefix 
         << (is_last ? "└── " : "├── " )
-        << ansi(Color::Reset)
+        << reset()
         << (child.entry ? get_scheme_ansi(EntryName) : get_scheme_ansi(NodeName)) 
         << name 
-        << ansi(Color::Reset) << "\n";
+        << reset() << "\n";
         
       print_tree(child, prefix + (is_last ? "    " : "│   "));
     }
@@ -218,7 +218,7 @@ namespace ck::index {
       std::cout 
         << get_scheme_ansi(VaultName) 
         << *vcfg.vault 
-        << ansi(Color::Reset) 
+        << reset()
         << "\n";
         print_tree(idx.root);
       return;
@@ -233,7 +233,7 @@ namespace ck::index {
     std::cout 
       << get_scheme_ansi(NodeName) 
       << path->back()
-      << ansi(Color::Reset) 
+      << reset()
       << "\n";
     print_tree(*node);
   }

@@ -3,7 +3,7 @@
 #include <csignal>
 
 #include "lib/types.hpp"
-#include "util/logger.hpp"
+#include "util/logger/logger.hpp"
 
 #ifdef _WIN32
 #include <conio.h>

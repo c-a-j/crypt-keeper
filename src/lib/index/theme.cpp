@@ -8,18 +8,17 @@ namespace ck::index {
   using enum ck::util::term::Style;
   using enum OutputComponent;
   
-  std::string get_scheme_ansi(OutputComponent c) {
+  TextStyle get_scheme_style(OutputComponent c) {
     switch (c) {
-      case VaultName:      
-        return ansi(Blue, { Bold });
-      case NodeName:        
-        return ansi(Blue, { Bold });
-      case EntryName:       
-        return ansi(Yellow, { Faint });
-      case Line:            
-        return ansi(Gray, { Faint });
+      case VaultName: return { Blue, { Bold } };
+      case NodeName:  return { Blue, { Bold } };
+      case EntryName: return { Yellow, { Faint } };
+      case Line:      return { Gray, { Faint } };
     }
-    
-    return ansi(Gray);
+    return { Gray };
+  }
+  
+  std::string get_scheme_ansi(OutputComponent c) {
+    return ansi(get_scheme_style(c));
   }
 }

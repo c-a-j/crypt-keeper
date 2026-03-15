@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "util/term.hpp"
 
 namespace ck::index {
   enum class OutputComponent {
@@ -9,5 +10,6 @@ namespace ck::index {
     EntryName,
     Line
   };
+  ck::util::term::TextStyle get_scheme_style(OutputComponent);
   std::string get_scheme_ansi(OutputComponent);
 }

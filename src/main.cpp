@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "cli/cli.hpp"
-#include "util/logger.hpp"
+#include "util/logger/logger.hpp"
 #include "util/error.hpp"
 #include "lib/types.hpp"
 

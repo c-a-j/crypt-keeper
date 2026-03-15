@@ -24,6 +24,11 @@ namespace ck::util::term {
     Italic,
     Underline
   };
+  
+  struct TextStyle {
+    Color color = Color::Default;
+    std::vector<Style> style = { Style::Normal };
+  };
 
   inline const char* color_code(Color c) {
     switch (c) {
@@ -52,16 +57,20 @@ namespace ck::util::term {
     return "";
   }
 
-  inline std::string ansi(Color color, std::vector<Style> style = {}) {
-    if (color == Color::Default) { return ""; }
+  inline std::string ansi(TextStyle s = {}) {
+    if (s.color == Color::Default) { return ""; }
     std::string out = "\033[";
     
-    for (auto s : style) {
-      out += style_code(s);
+    for (auto style : s.style) {
+      out += style_code(style);
     }
     
-    out += color_code(color);
+    out += color_code(s.color);
     out += "m";
     return out;
+  }
+  
+  inline std::string reset() {
+    return ansi({Color::Reset});
   }
 }
