@@ -11,8 +11,6 @@
 
 #include "lib/crypto/crypto.hpp"
 
-
-
 namespace ck::cmd {
   namespace fs = std::filesystem;
   using ck::util::error::Error;
@@ -20,21 +18,14 @@ namespace ck::cmd {
   using enum ck::util::error::InitErrc;
   using namespace ck::config;
     
-  void init(const ck::cli::InitArgs& args) {
+  void init(const ck::cli::Context& ctx, const ck::cli::InitArgs& args) {
     Config cfg;
     
-    Vault vault;
-    vault.name = args.vault_name;
-    vault.directory = args.directory;
-    vault.key_fpr = args.key_fpr;
-    
     VaultConfig acfg;
-    get_active_config(cfg, acfg, vault);
+    get_active_config(cfg, acfg, args);
     
-    std::string key_fpr = ck::crypto::fingerprint(vault);
-    
-    if (!ck::crypto::public_key_exists(key_fpr)) {
-      throw Error<InitErrc>{KeyNotFound, vault.key_fpr.value()};
+    if (!ck::crypto::public_key_exists(args.key_fpr)) {
+      throw Error<InitErrc>{KeyNotFound, args.key_fpr};
     }
     
     fs::path dir = fs::path(*acfg.directory) / *acfg.vault;
@@ -55,12 +46,12 @@ namespace ck::cmd {
       throw Error<InitErrc>{OpenGpgIdFailed, std::string(gpg_id_path)};
     }
     
-    gpg_id_file << vault.key_fpr.value() << '\n';
+    gpg_id_file << args.key_fpr << '\n';
     if (!gpg_id_file) {
       throw Error<InitErrc>{WriteGpgIdFailed, std::string(gpg_id_path)};
     }
     
-    insert_vault(cfg, vault);
+    insert_vault(cfg, args.vault_name);
     save_config(cfg);
   }
 }

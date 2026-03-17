@@ -17,7 +17,6 @@
 namespace ck::index { 
   using namespace index;
   using namespace ck::config;
-  using namespace ck::secret;
   using ck::util::error::Error;
   using ck::util::error::IndexErrc;
   using enum ck::util::error::IndexErrc;

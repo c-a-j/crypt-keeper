@@ -1,9 +1,11 @@
-#include "lib/types.hpp"
+#include <optional>
 
+#include "lib/types.hpp"
+#include "cli/types.hpp"
 #include "lib/config/deserialize.hpp"
 
 namespace ck::config {
-  
+ using namespace ck::cli; 
   void apply_overrides(VaultConfig& active, const VaultConfig& overrides) {
     for (const auto& field : VaultConfig::fields()) {
       std::visit([&](auto member) {
@@ -13,20 +15,28 @@ namespace ck::config {
     }
   }
   
-  VaultConfig get_active_config(Config& cfg, VaultConfig& active, Vault& vault) {
+  VaultConfig get_active_config(Config& cfg, VaultConfig& acfg, const CmdArgs& cargs) {
     config::deserialize(cfg);
+    acfg = cfg.global;
+
+    std::optional<std::string> vault_name = 
+      std::visit([](const auto& args) -> std::optional<std::string> {
+        using T = std::decay_t<decltype(args)>;
+  
+        if constexpr (std::is_same_v<T, std::monostate>) {
+          return std::nullopt;
+        } else {
+          return args.vault_name;
+        }
+      }, cargs);
     
-    active = cfg.global;
+    if (!vault_name) { return acfg; }
+    acfg.vault = vault_name;
     
-    if (!vault.name) { return active; }
-    active.vault = vault.name;
-    
-    if (auto it = cfg.overrides.find(*vault.name); it != cfg.overrides.end()) {
-      apply_overrides(active, it->second);
+    if (auto it = cfg.overrides.find(*vault_name); it != cfg.overrides.end()) {
+      apply_overrides(acfg, it->second);
     }
     
-    vault.directory = active.directory;
-    
-    return active;
+    return acfg;
   }
 }

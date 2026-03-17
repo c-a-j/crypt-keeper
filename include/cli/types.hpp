@@ -7,14 +7,15 @@
 
 namespace ck::cli {
   struct RootArgs {
-    bool verbose = true;
+    bool verbose = false;
     bool colors = true;
+    bool debug = false;
   };
   
   struct InitArgs {
     std::string vault_name;
-    std::string directory;
     std::string key_fpr;
+    std::optional<std::string> directory;
   };
 
   struct ConfigArgs {
@@ -34,6 +35,20 @@ namespace ck::cli {
     std::optional<std::string> path;
   };
   
-  using CommandArgs =
-    std::variant<std::monostate, ConfigArgs, InitArgs, InsertArgs, ShowArgs>;
+  using CmdArgs = std::variant<
+    std::monostate,
+    InitArgs,
+    ConfigArgs,
+    InsertArgs,
+    ShowArgs
+  >;
+  
+  struct CliArgs {
+    RootArgs root;
+    CmdArgs cmd;
+  };
+  
+  struct Context {
+    RootArgs root_args;
+  };
 }

@@ -3,19 +3,10 @@
 #include <optional>
 #include <unordered_map>
 #include <array>
-#include <vector>
 #include <variant>
-#include <map>
-
 
 namespace ck::config {
   using namespace std::string_view_literals;
-  struct Vault {
-    std::optional<std::string> name;
-    std::optional<std::string> directory;
-    std::optional<std::string> key_fpr;
-  };
-  
   struct VaultConfig {
     std::optional<std::string> vault;
     std::optional<std::string> directory;
@@ -45,16 +36,6 @@ namespace ck::config {
     std::unordered_map<std::string, VaultConfig> overrides;
   };
 }
-
-namespace ck::secret {
-  struct Secret {
-    std::optional<std::string> path;
-    std::optional<std::string> value;
-    std::optional<std::string> key_fpr;
-    bool pwgen = false;
-  };
-}
-
 
 namespace ck::crypto {
   struct PwSpec {

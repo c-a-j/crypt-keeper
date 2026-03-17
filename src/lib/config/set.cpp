@@ -1,8 +1,8 @@
-#include "lib/types.hpp"
 #include <string>
 #include <vector>
 
 #include "lib/types.hpp"
+#include "cli/types.hpp"
 #include "./parse_key.hpp"
 #include "util/error.hpp"
 
@@ -49,14 +49,14 @@ namespace ck::config {
     }, field.member);
   }
   
-  void set_parameter(Config& cfg, Vault& vault, std::vector<std::string> set_args) {
-    if (set_args.size() < 2) return;
-    const std::string& key = set_args[0];
-    const std::string& val = set_args[1];
+  void set_parameter(Config& cfg, const ck::cli::ConfigArgs& args) {
+    if (args.set_args.size() < 2) return;
+    const std::string& key = args.set_args[0];
+    const std::string& val = args.set_args[1];
     
     ConfigKey cfg_key;
     cfg_key.key = key;
-    cfg_key.vault = vault.name;
+    cfg_key.vault = args.vault_name;
     parse_key(cfg_key);
     
     VaultConfig* target = resolve_target(cfg, cfg_key);

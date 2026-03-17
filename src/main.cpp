@@ -21,7 +21,7 @@ extern "C" const char* __asan_default_options() {
 
 int main(int argc, char** argv) {
   CLI::App app{"crypt-keeper"};
-  ck::cli::CommandArgs args = ck::cli::parse_cli(app, argc, argv);
+  ck::cli::CliArgs args = ck::cli::parse_cli(app, argc, argv);
   
   try {
     ck::cmd::run_command(args);

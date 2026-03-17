@@ -9,7 +9,7 @@ namespace {
   using ck::util::error::CryptoErrc;
   using enum ck::util::error::CryptoErrc;
   
-  bool key_exists(const std::string& key_id, bool secret) {
+  bool key_exists(const std::string& key_id, const bool secret) {
     ck::crypto::init_gpgme();
 
     gpgme_ctx_t ctx = nullptr;
@@ -47,6 +47,6 @@ namespace ck::crypto {
       throw Error<CryptoErrc>{GpgmeFailed, "gpgme initialization failed"};
     }
   }
-  bool public_key_exists(std::string& key_fpr) {return key_exists(key_fpr, false);}
-  bool private_key_exists(std::string& key_fpr) {return key_exists(key_fpr, true);}
+  bool public_key_exists(const std::string& key_fpr) {return key_exists(key_fpr, false);}
+  bool private_key_exists(const std::string& key_fpr) {return key_exists(key_fpr, true);}
 }

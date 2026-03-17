@@ -2,7 +2,6 @@
 #include <iostream>
 #include <csignal>
 
-#include "lib/types.hpp"
 #include "util/logger/logger.hpp"
 
 #ifdef _WIN32
@@ -12,8 +11,7 @@
 #include <unistd.h>
 #endif
 
-namespace ck::secret {
-  using namespace ck::config;
+namespace ck::input {
   using namespace ck::util::logger;
 
 #ifndef _WIN32
@@ -47,9 +45,9 @@ namespace ck::secret {
   };
 #endif
 
-  void wisper(Secret& secret) {
+  std::string wisper() {
     logger.info("Enter secret:");
-
+    
     std::string value;
     bool interrupted = false;
 
@@ -132,6 +130,6 @@ namespace ck::secret {
       std::raise(SIGINT);
     }
 
-    secret.value = value;
+    return value;
   }
 }

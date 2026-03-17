@@ -2,22 +2,24 @@
 #include "./detail.hpp"
 
 namespace ck::cmd {
-using namespace ck::cli;
-
-  int run_command(const CommandArgs& cargs) {
+  int run_command(const ck::cli::CliArgs& args) {
+    ck::cli::CmdArgs cargs = args.cmd;
+    ck::cli::Context ctx = {
+      .root_args = args.root,
+    };
     return std::visit([&](const auto& args) -> int {
       using T = std::decay_t<decltype(args)>;
       
       if constexpr (std::is_same_v<T, std::monostate>) {
         return 0;
-      } else if constexpr (std::is_same_v<T, InitArgs>) {
-        init(args);
-      } else if constexpr (std::is_same_v<T, ConfigArgs>) {
-        config(args);
-      } else if constexpr (std::is_same_v<T, InsertArgs>) {
-        insert(args);
-      } else if constexpr (std::is_same_v<T, ShowArgs>) {
-        show(args);
+      } else if constexpr (std::is_same_v<T, ck::cli::InitArgs>) {
+        init(ctx, args);
+      } else if constexpr (std::is_same_v<T, ck::cli::ConfigArgs>) {
+        config(ctx, args);
+      } else if constexpr (std::is_same_v<T, ck::cli::InsertArgs>) {
+        insert(ctx, args);
+      } else if constexpr (std::is_same_v<T, ck::cli::ShowArgs>) {
+        show(ctx, args);
       }
       return 0;
     }, cargs);

@@ -2,7 +2,6 @@
 
 #include "lib/types.hpp"
 
-namespace ck::secret {
-  using namespace ck::secret;
-  void wisper(Secret&);
+namespace ck::input {
+  std::string wisper();
 }

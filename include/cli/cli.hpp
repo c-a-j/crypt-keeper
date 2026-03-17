@@ -4,5 +4,5 @@
 #include "cli/types.hpp"
 
 namespace ck::cli {
-  CommandArgs parse_cli(CLI::App&, int, char**);
+  CliArgs parse_cli(CLI::App&, int, char**);
 }

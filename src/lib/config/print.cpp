@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "lib/types.hpp"
+#include "cli/types.hpp"
 #include "./parse_key.hpp"
 
 namespace ck::config {
@@ -39,25 +40,24 @@ namespace ck::config {
     }
   }
   
-  void print_config(const Config& cfg, const Vault& vault) {
-    if (!vault.name) {
-      print_fields(cfg.global, vault.name);
+  void print_config(const Config& cfg, const ck::cli::ConfigArgs& args) {
+    if (!args.vault_name) {
+      print_fields(cfg.global, args.vault_name);
     }
     
     for (const auto& [v, ov] : cfg.overrides) {
-      if (vault.name && v != *vault.name) continue;
-      print_fields(ov, vault.name);
+      if (args.vault_name && v != *args.vault_name) continue;
+      print_fields(ov, args.vault_name);
     }
   }
   
   void print_parameter(
     const Config& cfg, 
-    const Vault& vault, 
-    const std::string& key
+    const ck::cli::ConfigArgs& args
   ) {
     ConfigKey cfg_key;
-    cfg_key.key = key;
-    cfg_key.vault = vault.name;
+    cfg_key.key = args.set_args[0];
+    cfg_key.vault = args.vault_name;
     parse_key(cfg_key);
 
     if (cfg_key.scope == "global") {

@@ -10,7 +10,7 @@ namespace ck::index {
   
   nlohmann::json serialize_obj(const IndexObj& entry);
   
-  IndexObj create_obj(const ck::secret::Secret& secret);
+  IndexObj create_obj(const std::string&);
   
   nlohmann::json serialize(const Index&);
 }

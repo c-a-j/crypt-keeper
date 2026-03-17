@@ -1,9 +1,12 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "cli/types.hpp"
+
+#include "util/error.hpp"
+
 #include "lib/types.hpp"
 #include "lib/crypto/random.hpp"
-#include "util/error.hpp"
 
 #include "lib/index/types.hpp"
 #include "lib/index/deserialize.hpp"
@@ -14,18 +17,17 @@
 
 namespace ck::index { 
   using namespace ck::config;
-  using namespace ck::secret;
   using namespace ck::crypto;
   using namespace ck::util::error;
   using enum ck::util::error::IndexErrc;
   
-  IndexObj create_obj(const Secret& secret) {
+  IndexObj create_obj(const std::string& path) {
     IndexObj obj;
-    std::optional<std::vector<std::string>> path = parse_path(secret);
-    if (!path) {
+    std::optional<std::vector<std::string>> path_components = parse_path(path);
+    if (!path_components) {
       throw Error<IndexErrc>{NoPath};
     }
-    obj.path = *path;
+    obj.path = *path_components;
     obj.uuid = uuid_v4();
     return obj;
   }
@@ -39,9 +41,9 @@ namespace ck::index {
     walk_path(node, entry, path);
   }
   
-  void insert(const VaultConfig& vcfg, const Secret& secret) {
+  void insert(const VaultConfig& vcfg, const ck::cli::InsertArgs& args) {
     Index idx = deserialize(vcfg);
-    IndexObj obj = create_obj(secret);
+    IndexObj obj = create_obj(args.path);
     insert_entry(idx, obj);
     write_idx(vcfg, serialize(idx));
   }

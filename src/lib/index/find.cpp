@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "cli/types.hpp"
+
 #include "lib/index/theme.hpp"
 #include "lib/index/print_tree.hpp"
 #include "lib/index/parse_path.hpp"
@@ -21,7 +23,6 @@
 namespace ck::index { 
   using namespace index;
   using namespace ck::config;
-  using namespace ck::secret;
   using namespace ck::util::logger;
   using ck::util::error::Error;
   using ck::util::error::IndexErrc;
@@ -30,13 +31,13 @@ namespace ck::index {
   using namespace ck::crypto;
   using namespace ck::util::term;
   
-  void find(const VaultConfig& vcfg, const Secret& secret){
+  void find(const VaultConfig& vcfg, const ck::cli::ShowArgs& args){
     Entry idx_entry;
     if (!vcfg.vault) {
       throw Error<IndexErrc>{VaultUnspecified, "vault must be specified as argument or in config file"};
     }
     Index idx = deserialize(vcfg);
-    std::optional<std::vector<std::string>> path = parse_path(secret);
+    std::optional<std::vector<std::string>> path = parse_path(args.path);
     if (!path) {
       std::cout 
         << get_scheme_ansi(VaultName) 
@@ -51,7 +52,7 @@ namespace ck::index {
       node = &node->children[(*path)[i]];
     }
     if (node->children.empty() && !node->entry) {
-      throw Error<IndexErrc>{SecretNotFound, secret.path.value_or("")};
+      throw Error<IndexErrc>{SecretNotFound, args.path.value_or("")};
     }
     std::cout 
       << get_scheme_ansi(NodeName) 
