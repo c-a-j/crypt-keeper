@@ -2,8 +2,8 @@
 #include <string>
 #include <filesystem>
 
-#include "./path.hpp"
-#include "./default.hpp"
+#include "./_internal/path.hpp"
+#include "./_internal/default.hpp"
 #include "lib/types.hpp"
 #include "util/logger/logger.hpp"
 

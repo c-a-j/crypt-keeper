@@ -1,5 +1,6 @@
-#include "lib/index/theme.hpp"
 #include "util/term.hpp"
+
+#include "./_internal/theme.hpp"
 
 namespace ck::index {
   using namespace ck::util::term;

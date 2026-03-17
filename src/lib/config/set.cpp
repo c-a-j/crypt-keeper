@@ -3,7 +3,7 @@
 
 #include "lib/types.hpp"
 #include "cli/types.hpp"
-#include "./parse_key.hpp"
+#include "./_internal/parse_key.hpp"
 #include "util/error.hpp"
 
 namespace ck::config {

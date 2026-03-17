@@ -5,7 +5,7 @@
 
 #include "lib/types.hpp"
 #include "cli/types.hpp"
-#include "./parse_key.hpp"
+#include "./_internal/parse_key.hpp"
 
 namespace ck::config {
   // using namespace ck::util::error;

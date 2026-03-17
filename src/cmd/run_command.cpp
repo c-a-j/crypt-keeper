@@ -1,5 +1,5 @@
 #include "cli/types.hpp"
-#include "./detail.hpp"
+#include "./_internal.hpp"
 
 namespace ck::cmd {
   int run_command(const ck::cli::CliArgs& args) {

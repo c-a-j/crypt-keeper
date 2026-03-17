@@ -1,7 +1,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "lib/index/types.hpp"
+#include "./_internal/types.hpp"
 
 
 namespace ck::index { 

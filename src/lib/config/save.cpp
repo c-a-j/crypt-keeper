@@ -5,8 +5,8 @@
 #include <filesystem>
 
 #include "lib/types.hpp"
-#include "./path.hpp"
-#include "./serialize.hpp"
+#include "./_internal/path.hpp"
+#include "./_internal/serialize.hpp"
 #include "util/error.hpp"
 #include "util/logger/logger.hpp"
 

@@ -3,11 +3,11 @@
 #include <fstream>
 #include <filesystem>
 
-#include "lib/index/types.hpp"
-#include "lib/index/walk_path.hpp"
-#include "lib/index/get_idx_file.hpp"
 #include "lib/types.hpp"
 
+#include "./_internal/types.hpp"
+#include "./_internal/get_idx_file.hpp"
+#include "./_internal/walk_path.hpp"
 
 namespace ck::index { 
   namespace fs = std::filesystem;

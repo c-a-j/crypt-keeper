@@ -1,7 +1,6 @@
 #pragma once
 
-#include "lib/index/types.hpp"
-#include "lib/index/find.hpp"
+#include "./types.hpp"
 
 namespace ck::index {
   void print_tree(const Node&, const std::string& = "");

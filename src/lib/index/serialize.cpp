@@ -4,15 +4,18 @@
 #include <filesystem>
 #include <fstream>
 
-#include "lib/index/theme.hpp"
-#include "lib/index/parse_path.hpp"
-#include "lib/index/types.hpp"
-#include "lib/index/deserialize.hpp"
-#include "lib/index/get_idx_file.hpp"
-
 #include "util/error.hpp"
 #include "lib/types.hpp"
 #include "lib/crypto/random.hpp"
+
+
+#include "./_internal/get_idx_file.hpp"
+#include "./_internal/deserialize.hpp"
+#include "./_internal/types.hpp"
+#include "./_internal/parse_path.hpp"
+#include "./_internal/theme.hpp"
+#include "./_internal/types.hpp"
+
 
 namespace ck::index { 
   using namespace index;

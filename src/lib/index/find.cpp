@@ -5,20 +5,20 @@
 #include <fstream>
 
 #include "cli/types.hpp"
-
-#include "lib/index/theme.hpp"
-#include "lib/index/print_tree.hpp"
-#include "lib/index/parse_path.hpp"
-#include "lib/index/types.hpp"
-#include "lib/index/find.hpp"
-#include "lib/index/deserialize.hpp"
-#include "lib/index/get_idx_file.hpp"
-
 #include "util/logger/logger.hpp"
 #include "util/error.hpp"
 #include "lib/types.hpp"
 #include "lib/crypto/crypto.hpp"
 #include "lib/crypto/random.hpp"
+
+#include "lib/index/find.hpp"
+
+#include "./_internal/types.hpp"
+#include "./_internal/deserialize.hpp"
+#include "./_internal/get_idx_file.hpp"
+#include "./_internal/parse_path.hpp"
+#include "./_internal/print_tree.hpp"
+#include "./_internal/theme.hpp"
 
 namespace ck::index { 
   using namespace index;

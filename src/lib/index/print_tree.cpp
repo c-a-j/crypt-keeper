@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <iostream>
 
-#include "lib/index/types.hpp" 
-#include "lib/index/theme.hpp" 
-#include "lib/index/print_tree.hpp" 
 #include "util/term.hpp" 
+
+#include "./_internal/types.hpp"
+#include "./_internal/print_tree.hpp" 
+#include "./_internal/theme.hpp" 
  
 namespace ck::index {
   using ck::util::term::reset;

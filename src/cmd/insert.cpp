@@ -1,4 +1,4 @@
-#include "./detail.hpp"
+#include "./_internal.hpp"
 #include "cli/types.hpp"
 #include "lib/types.hpp"
 #include "lib/config/active.hpp"

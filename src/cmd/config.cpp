@@ -1,6 +1,6 @@
 #include <CLI/CLI.hpp>
 
-#include "./detail.hpp"
+#include "./_internal.hpp"
 #include "cli/types.hpp"
 
 #include "lib/config/deserialize.hpp"

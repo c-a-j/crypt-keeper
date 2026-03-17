@@ -1,8 +1,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "cli/types.hpp"
-
 namespace ck::index { 
   
   std::optional<std::vector<std::string>> parse_path(const std::optional<std::string> path) {

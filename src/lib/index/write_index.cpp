@@ -3,11 +3,12 @@
 #include <filesystem>
 #include <fstream>
 
-#include "lib/index/deserialize.hpp"
-#include "lib/index/get_idx_file.hpp"
-
 #include "util/error.hpp"
 #include "lib/types.hpp"
+
+#include "./_internal/get_idx_file.hpp"
+#include "./_internal/deserialize.hpp"
+
 
 namespace ck::index { 
   using namespace ck::config;

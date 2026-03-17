@@ -1,7 +1,8 @@
 #include <nlohmann/json.hpp>
 
-#include "lib/index/types.hpp"
 #include "lib/types.hpp"
+
+#include "./types.hpp"
 
 namespace ck::index { 
   Entry deserialize_entry(const nlohmann::json& j);

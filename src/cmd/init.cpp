@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "./detail.hpp"
+#include "./_internal.hpp"
 #include "util/error.hpp"
 
 #include "lib/config/insert_vault.hpp"

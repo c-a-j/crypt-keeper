@@ -1,9 +1,7 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
 
-#include "lib/index/walk_path.hpp"
 #include "lib/types.hpp"
-
 
 namespace ck::index { 
   namespace fs = std::filesystem;
