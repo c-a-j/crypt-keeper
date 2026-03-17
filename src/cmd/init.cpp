@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "cmd/init.hpp"
+#include "./detail.hpp"
 #include "util/error.hpp"
 
 #include "lib/config/insert_vault.hpp"
@@ -13,14 +13,20 @@
 
 
 
-namespace ck::init {
+namespace ck::cmd {
   namespace fs = std::filesystem;
   using ck::util::error::Error;
   using ck::util::error::InitErrc;
   using enum ck::util::error::InitErrc;
   using namespace ck::config;
     
-  void init(Config& cfg, Vault& vault) {
+  void init(const ck::cli::InitArgs& args) {
+    Config cfg;
+    
+    Vault vault;
+    vault.name = args.vault_name;
+    vault.directory = args.directory;
+    vault.key_fpr = args.key_fpr;
     
     VaultConfig acfg;
     get_active_config(cfg, acfg, vault);

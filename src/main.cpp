@@ -1,11 +1,11 @@
 #include <CLI/CLI.hpp>
 #include <string>
-#include <iostream>
 
+#include "cmd/run_command.hpp"
 #include "cli/cli.hpp"
+#include "cli/types.hpp"
 #include "util/logger/logger.hpp"
 #include "util/error.hpp"
-#include "lib/types.hpp"
 
 #if defined(__has_feature)
 #  if __has_feature(address_sanitizer)
@@ -20,26 +20,11 @@ extern "C" const char* __asan_default_options() {
 #endif
 
 int main(int argc, char** argv) {
-  ck::config::Vault vault = {};
-  ck::secret::Secret secret = {};
-  ck::config::Config cfg = {};
-  std::vector<std::string> set_args;
-
   CLI::App app{"crypt-keeper"};
-  ck::cli::build_cli(app);
-  ck::cli::build_config(app, cfg, vault, set_args);
-  ck::cli::build_init(app, cfg, vault);
-  ck::cli::build_insert(app, cfg, vault, secret);
-  ck::cli::build_show(app, cfg, vault, secret);
-  
-  
-  if (argc == 1) {
-    std::cout << app.help() << '\n';
-    return 0;
-  }
+  ck::cli::CommandArgs args = ck::cli::parse_cli(app, argc, argv);
   
   try {
-    app.parse(argc,argv);
+    ck::cmd::run_command(args);
     return 0;
   } catch (const CLI::Success& e) {
     return app.exit(e);

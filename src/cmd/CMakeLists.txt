@@ -3,4 +3,5 @@ target_sources(ck PRIVATE
   insert.cpp
   show.cpp
   config.cpp
+  run_command.cpp
 )
