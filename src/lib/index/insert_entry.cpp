@@ -28,8 +28,7 @@ namespace ck::index {
   
   IndexObj create_obj(
     const VaultConfig& acfg,
-    const std::optional<std::string>& path, 
-    std::optional<std::string> group_id
+    const std::optional<std::string>& path
   ) {
     IndexObj obj;
     std::optional<std::vector<std::string>> path_components = parse_path(path);
@@ -37,10 +36,6 @@ namespace ck::index {
     
     if (!path_components) {
       throw Error<IndexErrc>{NoPath};
-    }
-    
-    if (!group_id) {
-      // key_fprs = get_fingerprints(acfg);
     }
     
     obj.path = *path_components;
@@ -63,15 +58,20 @@ namespace ck::index {
     Index& idx, 
     const IndexObj& obj, 
     const fs::path& file_path,
-    std::vector<std::string>& keys
+    std::vector<std::string>& keys,
+    bool pwgen
   ) {
     Entry entry;
     entry.uuid = obj.uuid;
     std::vector<std::string> path_components = obj.path;
     Node* node = walk_path(&idx.root, path_components);
     
+    const SecureBytes secret = (pwgen) 
+        ? ck::crypto::pwgen() 
+        : ck::input::wisper();
+    
     ck::crypto::write_file(
-      ck::input::wisper(), 
+      secret, 
       keys,
       file_path
     );
@@ -80,12 +80,12 @@ namespace ck::index {
   
   void insert(const VaultConfig& vcfg, const ck::cli::InsertArgs& args) {
     Index idx = deserialize(vcfg);
-    IndexObj obj = create_obj(vcfg, args.path, args.key_fpr);
+    IndexObj obj = create_obj(vcfg, args.path);
     
     fs::path sfp = secret_file_path(vcfg.directory, vcfg.vault, obj.uuid);
     std::vector<std::string> keys = get_fingerprints(vcfg);
     
-    insert_entry(idx, obj, sfp, keys);
+    insert_entry(idx, obj, sfp, keys, args.pwgen);
     write_idx(vcfg, serialize(idx));
   }
 }

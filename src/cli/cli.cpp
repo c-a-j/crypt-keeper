@@ -38,11 +38,9 @@ namespace ck::cli {
       return config;
     }
       
-      
     CLI::App* add_insert(CLI::App& app, ParsedCmdArgs& args) {
       auto* insert = app.add_subcommand("insert", "insert a new secret");
       insert -> add_option("-v,--vault", args.insert.vault_name, "vault name");
-      insert -> add_option("-k,--key", args.insert.key_fpr, "encryption key");
       insert -> add_flag("--pwgen", args.insert.pwgen, "insert a randomly generated password");
       insert -> add_option("path, -p,--path", args.insert.path, "secret path and name (ex cards/mybank/num") -> required();
       return insert;

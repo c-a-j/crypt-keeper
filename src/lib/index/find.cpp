@@ -24,7 +24,6 @@ namespace ck::index {
   using ck::util::error::IndexErrc;
   using enum ck::util::error::IndexErrc;
   using enum ck::index::OutputComponent;
-  using namespace ck::crypto;
   using namespace ck::util::term;
   
   void find(const VaultConfig& vcfg, const ck::cli::ShowArgs& args){

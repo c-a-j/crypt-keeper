@@ -7,8 +7,10 @@
 #include <ranges>
 
 
+#include "util/logger/logger.hpp"
 #include "util/error.hpp"
-#include "lib/types.hpp"
+#include "lib/crypto/types.hpp"
+#include "lib/crypto/secure_bytes.hpp"
 
 #if defined(__linux__)
   #include <sys/random.h>
@@ -19,6 +21,7 @@
 #endif
 
 namespace {
+using ck::util::logger::logger;
 using ck::util::error::Error;
 using ck::util::error::CryptoErrc;
 using enum ck::util::error::CryptoErrc;
@@ -108,14 +111,25 @@ namespace ck::crypto {
     }
   }
   
-  void shuffle(std::string& s) {
-    for (std::size_t i = s.size(); i > 1; --i) {
-      std::size_t j = random_index(i);
-      std::swap(s[i-1], s[j]);
+  void fill_random_chars(
+    SecureBytes& out,
+    std::size_t& pos,
+    std::string_view charset,
+    std::size_t count
+  ) {
+    for (std::size_t i = 0; i < count; ++i) {
+      out.char_data()[pos++] = charset[random_index(charset.size())];
     }
   }
   
-  std::string pwgen(PwSpec& spec) {
+  void shuffle_bytes(SecureBytes& out) {
+    for (std::size_t i = out.size(); i > 1; --i) {
+      std::size_t j = random_index(i);
+      std::swap(out.char_data()[i - 1], out.char_data()[j]);
+    }
+  }
+  
+  SecureBytes pwgen(const PwSpec& spec) {
     std::size_t length, nlow, nupp, nnum, nsym, nrest;
     std::string pass;
     static constexpr std::string_view uppset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -128,8 +142,13 @@ namespace ck::crypto {
       "0123456789"
       "!@#$%^&*()-_=+[]{};:,.<>?";
     
-    if (!spec.length) { throw Error<CryptoErrc>{InvalidPwSpec, "a length is required"}; }
-    length = *spec.length;
+    if (!spec.length) { 
+      logger.warning("Password length not specified, defaulting to 20");
+      length = 20;
+      // throw Error<CryptoErrc>{InvalidPwSpec, "a length is required"}; 
+    } else {
+      length = *spec.length;
+    }
     if (length < 1) { throw Error<CryptoErrc>{InvalidPwSpec, "length must be greater than 0"}; }
     nupp = spec.nupp ? *spec.nupp : 0;
     nlow = spec.nlow ? *spec.nlow : 0;
@@ -139,14 +158,16 @@ namespace ck::crypto {
       throw Error<CryptoErrc>{InvalidPwSpec, "length must be greater than sum of parts"}; 
     }
     nrest = length - (nupp + nlow + nnum + nsym);
-   
-    pass += get_random_chars(uppset, nupp);
-    pass += get_random_chars(lowset, nlow);
-    pass += get_random_chars(numset, nnum);
-    pass += get_random_chars(symset, nsym);
-    pass += get_random_chars(charset, nrest);
-    shuffle(pass);
     
-    return pass;
+    SecureBytes out(length);
+    std::size_t pos = 0;
+   
+    fill_random_chars(out, pos, uppset, nupp);
+    fill_random_chars(out, pos, lowset, nlow);
+    fill_random_chars(out, pos, numset, nnum);
+    fill_random_chars(out, pos, symset, nsym);
+    fill_random_chars(out, pos, charset, nrest);
+    
+    return out;
   }
 }
