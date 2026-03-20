@@ -5,7 +5,7 @@
 
 #include "util/error.hpp"
 #include "lib/config/types.hpp"
-#include "./_internal/path.hpp"
+#include "../path/path.hpp"
 #include "util/logger/logger.hpp"
 
 
@@ -14,6 +14,7 @@ namespace {
   using ck::util::error::ConfigErrc;
   using enum ck::util::error::ConfigErrc;
   using ck::util::logger::logger;
+  namespace fs = std::filesystem;
   
   template <typename T>
   struct member_value;
@@ -99,6 +100,18 @@ namespace {
     }
     return key_parts;
   }
+  
+  void create_config_dir() {
+    fs::path dir = ck::path::config_dir();
+    std::error_code ec;
+    bool created = std::filesystem::create_directories(dir, ec);
+    if (ec) {
+      throw Error<ConfigErrc>{CreateDirectoryFailed, std::string(dir) };
+    }
+    if (created) {
+      logger.info("Created new config directory", std::string(dir));
+    }
+  }
 }
 
 
@@ -120,8 +133,9 @@ namespace ck::config::refactor {
   Pwgen& Config::pwgen() { return pwgen_; }
   
   void Config::deserialize() {
-    fs::path path = app_config_file();
+    fs::path path = ck::path::config_file();
     if (!fs::exists(path)) {
+      core_.home = ck::path::vault_root();
       return;
     }
     
@@ -186,7 +200,7 @@ namespace ck::config::refactor {
   void Config::write() {
     create_config_dir();  
     toml::table tbl = serialize(*this);
-    fs::path cfg_file = app_config_file();
+    fs::path cfg_file = ck::path::config_file();
     bool exists = fs::exists(cfg_file);
     std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
     out << tbl << "\n";

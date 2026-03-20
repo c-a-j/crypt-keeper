@@ -1,5 +1,11 @@
 #pragma once
 
 namespace ck::mount {
-  struct Mount {};
+  struct Mount {
+
+  };
+
+  struct Mounts {
+
+  };
 }

@@ -30,4 +30,6 @@ target_sources(ck_lib PRIVATE
     index/fingerprints.cpp
     
     mount/mount.cpp
+    
+    path/path.cpp
 )

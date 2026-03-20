@@ -53,6 +53,7 @@ namespace ck::config::refactor {
   };
 
   struct Core {
+    std::string home;
     bool autopush = true;
     bool autosync = true;
 
@@ -60,12 +61,13 @@ namespace ck::config::refactor {
     using BoolMember = MemberPtr<Core, bool>;
     using FieldVariant = Field<std::variant<StrMember, BoolMember>>; 
     
-    inline static constexpr std::array<FieldVariant, 2> k_fields {{
+    inline static constexpr std::array<FieldVariant, 3> k_fields {{
+        {"home", &Core::home},
         {"autopush", &Core::autopush},
         {"autosync", &Core::autosync}
       }};
     
-    static constexpr const std::array<FieldVariant, 2>& fields() { return k_fields; }
+    static constexpr const std::array<FieldVariant, 3>& fields() { return k_fields; }
     static constexpr const std::string_view k_name = "core";
   };
 
