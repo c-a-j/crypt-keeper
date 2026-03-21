@@ -30,7 +30,9 @@ target_sources(ck_lib PRIVATE
     index/fingerprints.cpp
     
     mount/mount.cpp
+    mount/print.cpp
     mount/theme.cpp
     
     path/path.cpp
+    path/parse_path.cpp
 )

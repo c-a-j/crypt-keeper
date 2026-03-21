@@ -29,14 +29,6 @@ namespace ck::mount {
     static constexpr const std::string_view k_name = "mount";
   };
 
-  struct Node {
-    Mount* node;
-  };
-
-  struct MountTree {
-    Node root; 
-  };
-
   // vault mount table
   class Mounts {
     public:

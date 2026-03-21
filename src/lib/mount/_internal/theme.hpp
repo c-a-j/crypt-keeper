@@ -9,6 +9,7 @@ namespace ck::mount {
     RootMountAlias,
     RootMountArrow,
     MountPath,
+    MountSubDir,
     MountAlias,
     MountArrow,
     Line

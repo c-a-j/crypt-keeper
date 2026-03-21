@@ -1,8 +1,9 @@
-#include <nlohmann/json.hpp>
 #include <string>
+#include <vector>
+#include <optional>
+#include <sstream>
 
 namespace ck::index { 
-  
   std::optional<std::vector<std::string>> parse_path(const std::optional<std::string> path) {
     if (!path) { return std::nullopt; }
     

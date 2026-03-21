@@ -10,7 +10,6 @@
 #include "cli/types.hpp"
 #include "../path/path.hpp"
 #include "./_internal/mount.hpp"
-#include "./_internal/theme.hpp"
 
 namespace fs = std::filesystem;
 
@@ -177,31 +176,13 @@ namespace ck::mount {
     return;
   }
 
-  using ck::util::term::reset;
-  using enum OutputComponent;
-  void Mounts::print() {
-    fs::path mnt_file = ck::path::mount_file();
-    if (!fs::exists(mnt_file)) { return; }
-    this->deserialize();
-    std::cout 
-      << get_scheme_ansi(RootMountPath)
-      << APP_NAME 
-      << reset()
-      << get_scheme_ansi(RootMountArrow)
-      << " \u2192 "
-      << reset()
-      << get_scheme_ansi(RootMountPath)
-      << "(" << this->root_.path << ")" 
-      << reset()
-      << "\n";
-  }
-
   void mount(const ck::cli::Context&, const ck::cli::MountArgs&) {
     Mounts m;
     m.mount("foo", "bar");
     m.mount("foo/bar", "foobar");
     m.mount("fooski/bar", "fooski");
     m.mount("fooski/barski", "barski");
+    m.mount("some/other/place", "barski/another/dir/fooski");
     m.umount("fooski");
 
     m.chroot("new/root");
