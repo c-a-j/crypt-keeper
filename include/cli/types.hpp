@@ -13,7 +13,7 @@ namespace ck::cli {
   struct InitArgs {
     std::string vault_name;
     std::string key_fpr;
-    std::optional<std::string> directory;
+    std::optional<std::string> path;
   };
 
   struct ConfigArgs {

@@ -32,7 +32,7 @@ namespace ck::cli {
       auto* init = app.add_subcommand("init", "initialize a new password store");
       init -> add_option("-v,--vault", args.init.vault_name, "vault name") -> required();
       init -> add_option("-k,--key", args.init.key_fpr, "vault key") -> required();
-      init -> add_option("-d,--directory", args.init.directory, "vault root directory");
+      init -> add_option("-p,--path", args.init.path, "vault path");
       return init;
     }
       

@@ -20,7 +20,16 @@ namespace ck::index {
     std::unordered_map<std::string, Node> children;
   };
   
-  struct Index {
-    Node root;
+  class Index {
+    public:
+      explicit Index();
+      
+      void print();
+      
+    
+    private:
+      Node root_;
+      void deserialize();
+      
   };
 }

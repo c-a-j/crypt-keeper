@@ -57,7 +57,7 @@ namespace {
     insert_fields(cfg, *subtbl);
   }
   
-  toml::table serialize(const ck::config::refactor::Config& cfg) {
+  toml::table serialize(const ck::config::Config& cfg) {
     toml::table tbl;
     
     insert_table(cfg.core(), tbl);
@@ -103,7 +103,7 @@ namespace {
 }
 
 
-namespace ck::config::refactor {
+namespace ck::config {
   using ck::util::error::Error;
   using ck::util::error::ConfigErrc;
   using enum ck::util::error::ConfigErrc;
@@ -119,6 +119,20 @@ namespace ck::config::refactor {
   
   const Pwgen& Config::pwgen() const { return pwgen_; }
   Pwgen& Config::pwgen() { return pwgen_; }
+  
+  const std::string& Config::home() const { 
+    if (core_.home.empty()) { 
+      throw Error<ConfigErrc>{InvalidConfigFile, "core.home must be defined without --path "};
+    }
+    return core_.home;
+  }
+  
+  std::string& Config::home() { 
+    if (core_.home.empty()) { 
+      core_.home = ck::path::vault_root();
+    }
+    return core_.home;
+  }
   
   void Config::deserialize() {
     fs::path path = ck::path::config_file();
