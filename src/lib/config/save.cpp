@@ -28,7 +28,7 @@ namespace ck::config {
     std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
     out << cfg_toml << "\n";
     if (!out) {
-      throw Error<ConfigErrc>{SaveConfigFailed, std::string(cfg_file)};
+      throw Error<ConfigErrc>{WriteConfigFailed, std::string(cfg_file)};
     }
     if (!exists) {
       logger.info("Created new config file", std::string(cfg_file));

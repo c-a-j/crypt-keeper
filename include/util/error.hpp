@@ -44,7 +44,7 @@ namespace ck::util::error {
   enum class ConfigErrc {
     CreateDirectoryFailed,
     CreateConfigFailed,
-    SaveConfigFailed,
+    WriteConfigFailed,
     AlreadyExists,
     DoesNotExist,
     InvalidSetParameter,
@@ -57,7 +57,7 @@ namespace ck::util::error {
     switch (c) {
       case ConfigErrc::CreateDirectoryFailed: return "Failed to create vault";
       case ConfigErrc::CreateConfigFailed:    return "Failed to create conifig file";
-      case ConfigErrc::SaveConfigFailed:      return "Failed to save conifig file";
+      case ConfigErrc::WriteConfigFailed:     return "Failed to write conifig file";
       case ConfigErrc::AlreadyExists:         return "Configuration file already exists";
       case ConfigErrc::DoesNotExist:          return "Configuration file not found";
       case ConfigErrc::InvalidSetParameter:   return "Invalid configuration scope";
@@ -67,60 +67,91 @@ namespace ck::util::error {
       default:                                return "Unknown error";
     }
   }
-    
-    enum class CryptoErrc {
-      FillRandomBytesFailed,
-      GpgmeFailed,
-      GpgmeNewFailed,
-      GpgmeGetKeyFailed,
-      GpgmeSetProtocolFailed,
-      GpgmeOpGenKeyFailed,
-      GpgmeOpGenKeyResultFailed,
-      InvalidPwSpec,
-      GpgKeyNotFound,
-      InvalidSecureBytesArgs,
-      FailedToReadFile,
-      FailedToOpenFile,
-    };
-    template<>
-    inline std::string_view Error<CryptoErrc>::label(CryptoErrc c) {
-      switch (c) {
-        case CryptoErrc::FillRandomBytesFailed:     return "Fill random bytes failure";
-        case CryptoErrc::GpgmeFailed:               return "gpgme failure";
-        case CryptoErrc::GpgmeNewFailed:            return "gpgme_new failure";
-        case CryptoErrc::GpgmeGetKeyFailed:         return "gpgme_get_key failure";
-        case CryptoErrc::GpgmeSetProtocolFailed:    return "gpgme_set_protocol failure";
-        case CryptoErrc::GpgmeOpGenKeyFailed:       return "gpgme_op_genkey failure";
-        case CryptoErrc::GpgmeOpGenKeyResultFailed: return "gpgme_op_genkey_result failure";
-        case CryptoErrc::GpgKeyNotFound:            return "gpg key not found";
-        case CryptoErrc::InvalidPwSpec:             return "invalid password specification";
-        case CryptoErrc::InvalidSecureBytesArgs:    return "Invalid SecureBytes.assign() arguments";
-        case CryptoErrc::FailedToReadFile:          return "Failed to read file";
-        case CryptoErrc::FailedToOpenFile:          return "Failed to Open file";
-        default:                                    return "Unknown error";
-      }
+  enum class MountErrc {
+    MountFileNotFound,
+    WriteMountFailed,
+    VaultNotInitialized,
+    NoAlias,
+    AliasExists,
+    AliasDoesNotExist,
+  };
+  template<>
+  inline std::string_view Error<MountErrc>::label(MountErrc c) {
+    switch (c) {
+      case MountErrc::MountFileNotFound:      return "Mount file not found";
+      case MountErrc::WriteMountFailed:       return "Failed to write mount file";
+      case MountErrc::VaultNotInitialized:    return "Vault is not initialized";
+      case MountErrc::NoAlias:                return "Invalid mount file, every mount needs an alias";
+      case MountErrc::AliasExists:            return "Alias already exists";
+      case MountErrc::AliasDoesNotExist:      return "Alias does not exist";
+      default:                                return "Unknown error";
     }
+  }
     
-    enum class IndexErrc {
-      VaultUnspecified,
-      NoPath,
-      SecretExists,
-      PathConflict,
-      SecretNotFound,
-      UndefinedOptional,
-      GpgIdFileNotFound
-    };
-    template<>
-    inline std::string_view Error<IndexErrc>::label(IndexErrc c) {
-      switch (c) {
-        case IndexErrc::VaultUnspecified:           return "Vault unspecified";
-        case IndexErrc::NoPath:                     return "Path unspecified";
-        case IndexErrc::SecretExists:               return "Secret already exists";
-        case IndexErrc::PathConflict:               return "Path conflict";
-        case IndexErrc::SecretNotFound:             return "Secret or path not found";
-        case IndexErrc::UndefinedOptional:          return "Undefined optional value";
-        case IndexErrc::GpgIdFileNotFound:          return "Gpg ID file not found";
-        default:                                    return "Unknown error";
-      }
+  enum class CryptoErrc {
+    FillRandomBytesFailed,
+    GpgmeFailed,
+    GpgmeNewFailed,
+    GpgmeGetKeyFailed,
+    GpgmeSetProtocolFailed,
+    GpgmeOpGenKeyFailed,
+    GpgmeOpGenKeyResultFailed,
+    InvalidPwSpec,
+    GpgKeyNotFound,
+    InvalidSecureBytesArgs,
+    FailedToReadFile,
+    FailedToOpenFile,
+  };
+  template<>
+  inline std::string_view Error<CryptoErrc>::label(CryptoErrc c) {
+    switch (c) {
+      case CryptoErrc::FillRandomBytesFailed:     return "Fill random bytes failure";
+      case CryptoErrc::GpgmeFailed:               return "gpgme failure";
+      case CryptoErrc::GpgmeNewFailed:            return "gpgme_new failure";
+      case CryptoErrc::GpgmeGetKeyFailed:         return "gpgme_get_key failure";
+      case CryptoErrc::GpgmeSetProtocolFailed:    return "gpgme_set_protocol failure";
+      case CryptoErrc::GpgmeOpGenKeyFailed:       return "gpgme_op_genkey failure";
+      case CryptoErrc::GpgmeOpGenKeyResultFailed: return "gpgme_op_genkey_result failure";
+      case CryptoErrc::GpgKeyNotFound:            return "gpg key not found";
+      case CryptoErrc::InvalidPwSpec:             return "invalid password specification";
+      case CryptoErrc::InvalidSecureBytesArgs:    return "Invalid SecureBytes.assign() arguments";
+      case CryptoErrc::FailedToReadFile:          return "Failed to read file";
+      case CryptoErrc::FailedToOpenFile:          return "Failed to Open file";
+      default:                                    return "Unknown error";
     }
+  }
+  
+  enum class IndexErrc {
+    VaultUnspecified,
+    NoPath,
+    SecretExists,
+    PathConflict,
+    SecretNotFound,
+    UndefinedOptional,
+    GpgIdFileNotFound
+  };
+  template<>
+  inline std::string_view Error<IndexErrc>::label(IndexErrc c) {
+    switch (c) {
+      case IndexErrc::VaultUnspecified:           return "Vault unspecified";
+      case IndexErrc::NoPath:                     return "Path unspecified";
+      case IndexErrc::SecretExists:               return "Secret already exists";
+      case IndexErrc::PathConflict:               return "Path conflict";
+      case IndexErrc::SecretNotFound:             return "Secret or path not found";
+      case IndexErrc::UndefinedOptional:          return "Undefined optional value";
+      case IndexErrc::GpgIdFileNotFound:          return "Gpg ID file not found";
+      default:                                    return "Unknown error";
+    }
+  }
+
+  enum class PathErrc {
+    CreateDirectoryFailed,
+  };
+  template<>
+  inline std::string_view Error<PathErrc>::label(PathErrc c) {
+    switch (c) {
+      case PathErrc::CreateDirectoryFailed:   return "Failed to create config directory";
+      default:                                return "Unknown error";
+    }
+  }
 }

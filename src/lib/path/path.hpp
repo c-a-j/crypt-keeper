@@ -9,4 +9,5 @@ namespace ck::path {
   fs::path config_file();
   fs::path mount_dir();
   fs::path mount_file();
+  void create_config_dir();
 }

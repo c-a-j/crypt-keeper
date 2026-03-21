@@ -9,7 +9,9 @@
 // path functions
 namespace ck::path {
   namespace fs = std::filesystem;
-  using enum ck::util::error::ConfigErrc;
+  using ck::util::error::Error;
+  using ck::util::error::PathErrc;
+  using enum ck::util::error::PathErrc;
   using ck::util::logger::logger;
 
   static std::string env_or_empty(const char* name) {
@@ -63,5 +65,17 @@ namespace ck::path {
 
   fs::path mount_file() {
     return config_dir() / MOUNT_FILE;
+  }
+
+  void create_config_dir() {
+    fs::path dir = ck::path::config_dir();
+    std::error_code ec;
+    bool created = std::filesystem::create_directories(dir, ec);
+    if (ec) {
+      throw Error<PathErrc>{CreateDirectoryFailed, std::string(dir) };
+    }
+    if (created) {
+      logger.info("Created new config directory", std::string(dir));
+    }
   }
 }

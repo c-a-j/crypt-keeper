@@ -100,18 +100,6 @@ namespace {
     }
     return key_parts;
   }
-  
-  void create_config_dir() {
-    fs::path dir = ck::path::config_dir();
-    std::error_code ec;
-    bool created = std::filesystem::create_directories(dir, ec);
-    if (ec) {
-      throw Error<ConfigErrc>{CreateDirectoryFailed, std::string(dir) };
-    }
-    if (created) {
-      logger.info("Created new config directory", std::string(dir));
-    }
-  }
 }
 
 
@@ -198,14 +186,14 @@ namespace ck::config::refactor {
   }
   
   void Config::write() {
-    create_config_dir();  
+    ck::path::create_config_dir();  
     toml::table tbl = serialize(*this);
     fs::path cfg_file = ck::path::config_file();
     bool exists = fs::exists(cfg_file);
     std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
     out << tbl << "\n";
     if (!out) {
-      throw Error<ConfigErrc>{SaveConfigFailed, std::string(cfg_file)};
+      throw Error<ConfigErrc>{WriteConfigFailed, std::string(cfg_file)};
     }
     if (!exists) {
       logger.info("Created new config file", std::string(cfg_file));

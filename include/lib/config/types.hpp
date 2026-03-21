@@ -6,7 +6,6 @@
 #include <array>
 #include <vector>
 #include <variant>
-#include <filesystem>
 
 namespace ck::config {
   using namespace std::string_view_literals;
@@ -41,8 +40,6 @@ namespace ck::config {
 }
 
 namespace ck::config::refactor {
-  namespace fs = std::filesystem;
-  
   template<typename Owner, typename Member>
   using MemberPtr = Member Owner::*;
 
