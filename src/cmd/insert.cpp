@@ -7,10 +7,7 @@
 
 namespace ck::cmd {
   using ck::util::logger::logger;
-  void insert(const ck::cli::Context& ctx, const ck::cli::InsertArgs& args) {
-    ck::config::Config cfg;
-    ck::mount::Mounts mnt;
-    ck::index::Index idx;
+  void insert(const ck::cli::Context& _, const ck::cli::InsertArgs& args) {
     logger.info("inserting a secret");
   }
 }

@@ -53,6 +53,5 @@ namespace ck::mount {
     if (!exists) {
       logger.info("Created new mount file", std::string(mnt_file));
     }
-    this->print();
   }
 }

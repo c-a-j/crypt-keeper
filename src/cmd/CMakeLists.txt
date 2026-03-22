@@ -5,6 +5,7 @@ target_sources(ck PRIVATE
   config.cpp
   mount.cpp
   umount.cpp
+  chroot.cpp
   
   run_command.cpp
 )

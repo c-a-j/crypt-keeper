@@ -74,6 +74,7 @@ namespace ck::mount {
       this->root_.path = vault_path;
       this->root_.hash = hash();
       this->write();
+      this->print();
       return;
     }
     if (this->mounts_.contains(alias)) {
@@ -82,6 +83,7 @@ namespace ck::mount {
     this->mounts_[alias].path = vault_path;
     this->mounts_[alias].hash = hash();
     this->write();
+    this->print();
   }
 
   void Mounts::mount(const std::string& alias) {
@@ -113,11 +115,19 @@ namespace ck::mount {
     }
     this->write();
     logger.info(alias + std::string(" has been unmounted"));
+    this->print();
   }
 
   void Mounts::chroot(const std::string& path) {
+    std::vector<std::string> alias_parts = ck::path::parse_path(path);
+    fs::path vault_path;
+    if (alias_parts.size() == 1) {
+      vault_path = fs::path(cfg.home()) / fs::path(path);
+    } else {
+      vault_path = fs::path(path);
+    }
+
     fs::path mnt_file = ck::path::mount_file();
-    fs::path vault_path = fs::path(path);
 
     if (!initialized(vault_path)) { 
       throw Error<MountErrc>{VaultNotInitialized, path};
@@ -129,6 +139,8 @@ namespace ck::mount {
     this->root_.path = vault_path;
     this->root_.hash = hash();
     this->write();
+    logger.info("Root vault has been set to " + std::string(vault_path));
+    this->print();
     return;
   }
 

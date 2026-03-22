@@ -18,7 +18,7 @@ namespace ck::cmd {
   using enum ck::util::error::InitErrc;
   using namespace ck::config;
     
-  void init(const ck::cli::Context& ctx, const ck::cli::InitArgs& args) {
+  void init(const ck::cli::Context& _, const ck::cli::InitArgs& args) {
     Config cfg;
     
     if (!ck::crypto::public_key_exists(args.key_fpr)) {

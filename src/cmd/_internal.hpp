@@ -9,4 +9,5 @@ namespace ck::cmd {
   void show(const ck::cli::Context&, const ck::cli::ShowArgs&);
   void mount(const ck::cli::Context&, const ck::cli::MountArgs&);
   void umount(const ck::cli::Context&, const ck::cli::UmountArgs&);
+  void chroot(const ck::cli::Context&, const ck::cli::ChrootArgs&);
 }

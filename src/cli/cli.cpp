@@ -18,6 +18,7 @@ namespace ck::cli {
       ShowArgs show;
       MountArgs mount;
       UmountArgs umount;
+      ChrootArgs chroot;
     };
     
     void configure_root(CLI::App& app, RootArgs& args) {
@@ -71,6 +72,12 @@ namespace ck::cli {
       umount -> add_option("alias", args.umount.alias, "Mount alias")->required();
       return umount;
     }
+
+    CLI::App* add_chroot(CLI::App& app, ParsedCmdArgs& args) {
+      auto* chroot = app.add_subcommand("chroot", "Change root vault");
+      chroot -> add_option("path", args.chroot.path, "Vault path")->required();
+      return chroot;
+    }
   }
   
   CliArgs parse_cli(CLI::App& app, int argc, char** argv) {
@@ -84,6 +91,7 @@ namespace ck::cli {
     auto* show = add_show(app, cargs);
     auto* mount = add_mount(app, cargs);
     auto* umount = add_umount(app, cargs);
+    auto* chroot = add_chroot(app, cargs);
     
     CliArgs args = CliArgs{
       .root = RootArgs{},
@@ -119,6 +127,10 @@ namespace ck::cli {
     }
     if (umount->parsed()) { 
       args.cmd = cargs.umount;
+      return args; 
+    }
+    if (chroot->parsed()) { 
+      args.cmd = cargs.chroot;
       return args; 
     }
     

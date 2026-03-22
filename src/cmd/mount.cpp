@@ -1,10 +1,8 @@
-#include "util/logger/logger.hpp"
 #include "cli/types.hpp"
 #include "lib/mount/types.hpp"
 
 namespace ck::cmd {
   using ck::mount::mnt;
-  using ck::util::logger::logger;
 
   void mount(const ck::cli::Context& ctx, const ck::cli::MountArgs& args) {
     bool list = args.list;

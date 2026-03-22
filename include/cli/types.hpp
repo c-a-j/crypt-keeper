@@ -41,6 +41,10 @@ namespace ck::cli {
   struct UmountArgs {
     std::optional<std::string> alias;
   };
+
+  struct ChrootArgs {
+    std::optional<std::string> path;
+  };
   
   using CmdArgs = std::variant<
     std::monostate,
@@ -49,7 +53,8 @@ namespace ck::cli {
     InsertArgs,
     ShowArgs,
     MountArgs,
-    UmountArgs
+    UmountArgs,
+    ChrootArgs
   >;
   
   struct CliArgs {
