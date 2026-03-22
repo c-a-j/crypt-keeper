@@ -54,10 +54,13 @@ namespace ck::mount {
       void chroot(const std::string&);
       ResolvedPath resolve(const std::string&);
       void print();
+      bool empty() const noexcept;
 
     private:
       Mount root_;
       std::unordered_map<std::string, Mount> mounts_;
       void write();
   };
+
+  extern Mounts mnt;
 }

@@ -153,6 +153,6 @@ namespace ck::config {
       
       static constexpr const std::array<Section, 3>& sections() { return k_sections; }
   };
+
+  extern Config cfg;
 }
-
-

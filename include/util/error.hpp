@@ -75,6 +75,7 @@ namespace ck::util::error {
     AliasExists,
     AliasDoesNotExist,
     NoRoot,
+    InvalidArguments,
   };
   template<>
   inline std::string_view Error<MountErrc>::label(MountErrc c) {
@@ -86,6 +87,7 @@ namespace ck::util::error {
       case MountErrc::AliasExists:            return "Alias already exists";
       case MountErrc::AliasDoesNotExist:      return "Alias does not exist";
       case MountErrc::NoRoot:                 return "There is no root vault";
+      case MountErrc::InvalidArguments:       return "Invalid arguments";
       default:                                return "Unknown error";
     }
   }

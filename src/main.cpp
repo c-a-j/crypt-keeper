@@ -35,10 +35,10 @@ int main(int argc, char** argv) {
     ck::cmd::run_command(args);
     return 0;
   } catch (const CLI::Success& e) {
-    return 1;
+    return app.exit(e);
   } catch (const CLI::ParseError& e) {
     ck::util::logger::logger.error(e.what());
-    return 0;
+    return 1;
   } catch (const ck::util::error::AppError& e) {
     ck::util::logger::logger.error(e.msg1, e.msg2);
     return 1;

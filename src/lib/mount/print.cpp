@@ -137,9 +137,9 @@ namespace {
 
 namespace ck::mount {
   void Mounts::print() {
-    fs::path mnt_file = ck::path::mount_file();
-    if (!fs::exists(mnt_file)) { return; }
-    this->deserialize();
+    if (this->empty()) {
+      this->deserialize();
+    }
     Node root = mount_tree(*this);
     print_tree(root);
   }

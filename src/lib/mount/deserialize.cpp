@@ -28,6 +28,7 @@ namespace ck::mount {
           m.*(field.member) = *v;
         }
       }
+      this->root_ = m;
     }
 
     if (auto* mounts = mount_toml["mount"].as_array()) {

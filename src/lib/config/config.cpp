@@ -216,4 +216,5 @@ namespace ck::config {
     }
   }
   
+  Config cfg;
 }

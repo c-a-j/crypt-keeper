@@ -33,8 +33,9 @@ namespace ck::cli {
   };
   
   struct MountArgs {
-    std::optional<std::vector<std::string>> mount;
-    std::optional<bool> list;
+    std::optional<std::string> alias;
+    std::optional<std::string> path;
+    bool list;
   };
   
   struct UmountArgs {

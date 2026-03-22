@@ -58,8 +58,10 @@ namespace ck::cli {
     }
     
     CLI::App* add_mount(CLI::App& app, ParsedCmdArgs& args) {
+      args.mount.list = false;
       auto* mount = app.add_subcommand("mount", "Mount a vault");
-      mount -> add_option("mount", args.mount.mount, "Secret path");
+      mount -> add_option("alias", args.mount.alias, "Mount alias")->expected(1);
+      mount -> add_option("path", args.mount.path, "Vault path")->expected(1);
       mount -> add_flag("-l, --list", args.mount.list, "List mounts");
       return mount;
     }
