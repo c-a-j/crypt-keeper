@@ -59,15 +59,14 @@ namespace ck::cli {
     
     CLI::App* add_mount(CLI::App& app, ParsedCmdArgs& args) {
       auto* mount = app.add_subcommand("mount", "Mount a vault");
-      mount -> add_option("args", args.mount.mount, "Secret path");
+      mount -> add_option("mount", args.mount.mount, "Secret path");
       mount -> add_flag("-l, --list", args.mount.list, "List mounts");
-      mount -> add_option("-p, --path", args.mount.path, "Secret path");
       return mount;
     }
     
     CLI::App* add_umount(CLI::App& app, ParsedCmdArgs& args) {
       auto* umount = app.add_subcommand("umount", "Unmount a vault");
-      umount -> add_option("path, -p, --path", args.mount.path, "Secret path");
+      umount -> add_option("alias", args.umount.alias, "Mount alias")->required();
       return umount;
     }
   }
@@ -117,7 +116,7 @@ namespace ck::cli {
       return args; 
     }
     if (umount->parsed()) { 
-      args.cmd = cargs.mount;
+      args.cmd = cargs.umount;
       return args; 
     }
     

@@ -2,9 +2,10 @@
 #include <filesystem>
 
 #include "global.hpp"
+#include "lib/index/types.hpp"
 #include "./util/error.hpp"
-#include "./_internal/types.hpp"
 #include "./_internal/walk_path.hpp"
+#include "./_internal/vars.hpp"
 
 namespace ck::index { 
   using ck::util::error::Error;
@@ -37,9 +38,7 @@ namespace ck::index {
   void Index::deserialize(const std::string& vault_path) {
     toml::table tbl = deserialize_idx(vault_path);
 
-    // toml::array* entries = tbl["entries"].as_array();
-    
-    if (auto* entries = tbl["entries"].as_array()) {
+    if (auto* entries = tbl[IDX_ARR_NAME].as_array()) {
       for (auto&& n : *entries) {
         auto* entry = n.as_table();
         if (!entry) {

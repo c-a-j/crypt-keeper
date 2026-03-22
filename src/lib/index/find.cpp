@@ -9,7 +9,7 @@
 #include "lib/mount/types.hpp"
 
 #include "../path/parse_path.hpp"
-#include "./_internal/types.hpp"
+#include "lib/index/types.hpp"
 #include "./_internal/theme.hpp"
 
 namespace ck::index { 

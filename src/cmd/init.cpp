@@ -5,11 +5,14 @@
 #include "global.hpp"
 #include "./_internal.hpp"
 #include "util/error.hpp"
+#include "util/logger/logger.hpp"
 #include "lib/crypto/crypto.hpp"
 #include "lib/config/types.hpp"
+#include "lib/mount/types.hpp"
 
 namespace ck::cmd {
   namespace fs = std::filesystem;
+  using ck::util::logger::logger;
   using ck::util::error::Error;
   using ck::util::error::InitErrc;
   using enum ck::util::error::InitErrc;
@@ -22,25 +25,25 @@ namespace ck::cmd {
       throw Error<InitErrc>{KeyNotFound, args.key_fpr};
     }
     
-    fs::path vault_dir;
+    fs::path vault_path;
     
     if (!args.path) {
-      vault_dir = fs::path(cfg.home()) / args.vault_name;
+      vault_path = fs::path(cfg.home()) / args.vault_name;
     } else {
-      vault_dir = *args.path;
+      vault_path = *args.path;
     }
     
     std::error_code ec;
-    bool created = fs::create_directories(vault_dir, ec);
+    bool created = fs::create_directories(vault_path, ec);
     if (ec) {
       throw Error<InitErrc>{CreateDirectoryFailed, ec.message()};
     }
     
     if (!created) {
-      throw Error<InitErrc>{AlreadyExists, cfg.home()};
+      throw Error<InitErrc>{AlreadyExists, std::string(vault_path)};
     } 
     
-    const fs::path gpg_id_path = vault_dir / GPG_ID_FILE;
+    const fs::path gpg_id_path = vault_path / GPG_ID_FILE;
     std::ofstream gpg_id_file(gpg_id_path, std::ios::out | std::ios::trunc);
     if (!gpg_id_file.is_open()) {
       throw Error<InitErrc>{OpenGpgIdFailed, std::string(gpg_id_path)};
@@ -50,7 +53,12 @@ namespace ck::cmd {
     if (!gpg_id_file) {
       throw Error<InitErrc>{WriteGpgIdFailed, std::string(gpg_id_path)};
     }
+
+    std::string msg1;
+    msg1 += "Vault " + args.vault_name + " has been initialized: ";
+    std::string msg2;
+    msg2 += "use 'ck mount' to mount it";
     
-    // mount the first vault
+    logger.info(msg1, msg2);
   }
 }

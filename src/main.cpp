@@ -21,22 +21,24 @@ extern "C" const char* __asan_default_options() {
 
 int main(int argc, char** argv) {
   CLI::App app{"crypt-keeper"};
-  ck::cli::CliArgs args = ck::cli::parse_cli(app, argc, argv);
   
   ck::util::logger::logger.set_debug(true);
   
-  if (args.root.no_color) {
-    ck::util::logger::logger.set_no_color();
-  }
   
   try {
+    ck::cli::CliArgs args = ck::cli::parse_cli(app, argc, argv);
+    
+    if (args.root.no_color) {
+      ck::util::logger::logger.set_no_color();
+    }
+    
     ck::cmd::run_command(args);
     return 0;
   } catch (const CLI::Success& e) {
-    return app.exit(e);
+    return 1;
   } catch (const CLI::ParseError& e) {
     ck::util::logger::logger.error(e.what());
-    return app.exit(e);
+    return 0;
   } catch (const ck::util::error::AppError& e) {
     ck::util::logger::logger.error(e.msg1, e.msg2);
     return 1;

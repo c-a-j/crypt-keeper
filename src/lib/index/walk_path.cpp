@@ -3,26 +3,13 @@
 #include <vector>
 
 #include "util/error.hpp"
-#include "./_internal/types.hpp"
+#include "../path/join.hpp"
+#include "lib/index/types.hpp"
 
 namespace {
-  std::string join_path(const std::vector<std::string>& components) {
-    std::string path;
-    bool first = true;
-    for (auto component : components) { 
-      if (first) {
-        path += component;
-        first = false;
-        continue;
-      }
-      path += "/" + component; 
-    }
-    return path;
-  }
-  
   std::string along_path_msg(const std::vector<std::string>& path, std::size_t i) {
     std::string msg;
-    msg += join_path(path);
+    msg += ck::path::join(path);
     msg += " -> the secret '";
     msg += (i > 0) ? path[i-1] : "";
     msg += "' already exists along this path";
@@ -44,11 +31,11 @@ namespace ck::index {
     }
     
     if (node->entry) {
-      throw Error<IndexErrc>{SecretExists, join_path(path)};
+      throw Error<IndexErrc>{SecretExists, ck::path::join(path)};
     }
     
     if (!node->children.empty()) {
-      throw Error<IndexErrc>{PathConflict, join_path(path) + " -> has children"};
+      throw Error<IndexErrc>{PathConflict, ck::path::join(path) + " -> has children"};
     }
     return node;
   }

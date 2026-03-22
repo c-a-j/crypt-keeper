@@ -4,34 +4,25 @@ target_sources(ck_lib PRIVATE
     crypto/secure_wipe.cpp
     
     config/config.cpp
-    config/path.cpp
-    config/print.cpp
-    config/serialize.cpp
-    config/deserialize.cpp
-    config/active.cpp
-    config/parse_key.cpp
-    config/set.cpp
-    config/insert_vault.cpp
-    config/default.cpp
-    config/save.cpp
     
     input/wisper.cpp
     
-    index/find.cpp
-    index/theme.cpp
-    index/print_tree.cpp
-    index/parse_path.cpp
-    index/walk_path.cpp
     index/deserialize.cpp
-    index/serialize.cpp
-    index/get_idx_file.cpp
-    index/insert_entry.cpp
-    index/write_index.cpp
+    index/find.cpp
     index/fingerprints.cpp
+    index/index.cpp
+    index/insert_entry.cpp
+    index/print.cpp
+    index/theme.cpp
+    index/walk_path.cpp
+    index/write.cpp
     
+    mount/deserialize.cpp
     mount/mount.cpp
     mount/print.cpp
+    mount/resolve.cpp
     mount/theme.cpp
+    mount/write.cpp
     
     path/path.cpp
     path/parse_path.cpp

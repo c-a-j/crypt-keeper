@@ -1,8 +1,6 @@
-#include "lib/config/types.hpp"
-
 #include <string>
 #include <vector>
 
 namespace ck::index {
-  std::vector<std::string> get_fingerprints(const ck::config::VaultConfig&);
+  std::vector<std::string> get_fingerprints(const std::string&);
 }

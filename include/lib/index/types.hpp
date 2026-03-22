@@ -18,7 +18,7 @@ namespace ck::index {
   
   class Index {
     public:
-      explicit Index(const std::string& path = {});
+      explicit Index(const std::string& = {});
 
       const Node root() const;
       Node root();

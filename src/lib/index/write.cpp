@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <fstream>
 
+#include "./_internal/vars.hpp"
 #include "util/error.hpp"
-
-#include "./_internal/types.hpp"
+#include "lib/index/types.hpp"
 #include "../path/get_idx_file.hpp"
 
 namespace {
@@ -16,8 +16,12 @@ namespace {
 
   toml::table serialize(const IndexObj& obj) {
     toml::table tbl; 
-    tbl.insert_or_assign("path", obj.path);
-    tbl.insert_or_assign("uuid", obj.path);
+    toml::array path;
+    for (const auto& part : obj.path) {
+      path.push_back(part);
+    }
+    tbl.insert_or_assign("path", std::move(path));
+    tbl.insert_or_assign("uuid", obj.uuid);
     return tbl;
   }
 
@@ -41,7 +45,7 @@ namespace {
     toml::array entries;
     std::vector<std::string> path;
     dfs(idx.root(), path, entries);
-    tbl.insert("secret", entries);
+    tbl.insert(IDX_ARR_NAME, entries);
     return tbl;
   }
 }
