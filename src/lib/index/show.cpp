@@ -11,34 +11,22 @@
 #include "lib/index/types.hpp"
 #include "./_internal/theme.hpp"
 
-namespace ck::index { 
-  using namespace index;
-  using namespace ck::config;
-  using namespace ck::mount;
-  using ck::util::logger::logger;
-  using ck::util::error::Error;
-  using ck::util::error::IndexErrc;
-  using enum ck::util::error::IndexErrc;
-  using enum ck::index::OutputComponent;
-  using namespace ck::util::term;
   
-  void find(const std::optional<std::string>& path){
-    Config cfg;
-    Mounts mnt;
-    Index idx;
+  void find(){}
 
-    if (!path) {
-      std::cout << "PRINTING WHOLE TREE" << "\n";
-      return;
-    }
 
-    ResolvedPath rp = mnt.resolve(*path);
-    idx.deserialize(rp.vault_path);
-
-    if (!path) {
-      std::cout << "PRINTING TREE" << "\n";
-      return;
-    }
+    // if (!path) {
+    //   std::cout << "PRINTING WHOLE TREE" << "\n";
+    //   return;
+    // }
+    //
+    // ResolvedPath rp = mnt.resolve(*path);
+    // idx.deserialize(rp.vault_path);
+    //
+    // if (!path) {
+    //   std::cout << "PRINTING TREE" << "\n";
+    //   return;
+    // }
     
     // std::optional<std::vector<std::string>> path_parts = ck::path::parse_path(path);
     // if (!path) {
@@ -63,5 +51,22 @@ namespace ck::index {
   //     << reset()
   //     << "\n";
   //   print_tree(*node);
+
+namespace ck::index { 
+  using ck::config::cfg;
+  using ck::mount::mnt;
+  using ck::util::logger::logger;
+  using ck::util::error::Error;
+  using ck::util::error::IndexErrc;
+  using enum ck::util::error::IndexErrc;
+  using enum ck::index::OutputComponent;
+  using namespace ck::util::term;
+
+  void Index::show(const std::optional<std::string>& path) {
+    if (!path) {
+      logger.info("printiing whole tree");
+    } else {
+      logger.info("printiing subtree or secret");
+    }
   }
 }

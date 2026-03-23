@@ -8,11 +8,11 @@ target_sources(ck_lib PRIVATE
     input/wisper.cpp
     
     index/deserialize.cpp
-    index/find.cpp
     index/fingerprints.cpp
     index/index.cpp
     index/insert.cpp
     index/print.cpp
+    index/show.cpp
     index/theme.cpp
     index/walk_path.cpp
     index/write.cpp

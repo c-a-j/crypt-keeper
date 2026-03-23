@@ -54,7 +54,7 @@ namespace ck::cli {
     
     CLI::App* add_show(CLI::App& app, ParsedCmdArgs& args) {
       auto* show = app.add_subcommand("show", "Show a secret");
-      show -> add_option("path, -p, --path", args.show.path, "Secret path");
+      show -> add_option("path", args.show.path, "Secret path");
       return show;
     }
     

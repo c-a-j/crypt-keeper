@@ -26,7 +26,7 @@ namespace ck::index {
       
       void deserialize(const std::string&);
       void insert(const std::string&, const bool);
-      void find(const std::string&);
+      void show(const std::optional<std::string>&);
       void write();
       void print();
     

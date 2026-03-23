@@ -27,7 +27,6 @@ namespace ck::cli {
   };
 
   struct ShowArgs {
-    std::optional<std::string> vault_name;
     std::optional<std::string> path;
   };
   
