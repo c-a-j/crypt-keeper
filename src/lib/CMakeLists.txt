@@ -16,11 +16,16 @@ target_sources(ck_lib PRIVATE
     index/walk_path.cpp
     index/write.cpp
     
+    mount/chroot.cpp
     mount/deserialize.cpp
+    mount/hash.cpp
+    mount/initialized.cpp
     mount/mount.cpp
+    mount/mounts.cpp
     mount/print.cpp
     mount/resolve.cpp
     mount/theme.cpp
+    mount/umount.cpp
     mount/write.cpp
     
     path/path.cpp

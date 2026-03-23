@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "util/error.hpp"
+#include "util/logger/logger.hpp"
 #include "../path/join.hpp"
 #include "../path/parse_path.hpp"
 #include "lib/index/types.hpp"
@@ -18,13 +19,19 @@ namespace {
 }
 
 namespace ck::index { 
+  using ck::util::logger::logger;
   using ck::util::error::Error;
   using ck::util::error::IndexErrc;
   using enum ck::util::error::IndexErrc;
+
+  // used for clearing a trail through the intex tree
+  // does not allow secrets anywhere along the path (secrets are always terminal nodes)
+  // does not allow terminal node to have children (this is used for inserting entries)
   Node* Index::break_trail(const std::vector<std::string>& path_parts) {
     Node* node = &this->root_;
     for (std::size_t i = 0; i < path_parts.size(); ++i) {
       if (node->entry){
+        logger.debug("Index::break_trail()");
         throw Error<IndexErrc>{PathConflict, along_path_msg(path_parts, i)};
       }
       
@@ -32,10 +39,12 @@ namespace ck::index {
     }
     
     if (node->entry) {
+      logger.debug("Index::break_trail()");
       throw Error<IndexErrc>{SecretExists, ck::path::join(path_parts)};
     }
     
     if (!node->children.empty()) {
+      logger.debug("Index::break_trail()");
       throw Error<IndexErrc>{PathConflict, ck::path::join(path_parts) + " -> has children"};
     }
     return node;
@@ -45,6 +54,9 @@ namespace ck::index {
     return this->break_trail(ck::path::parse_path(path));
   }
 
+  // used for clearing a trail through the intex tree before inserting a mount
+  // does not allow secrets anywhere along the path (extra check, Mounts::mount() already checks for this)
+  // returns the last node in the path (this is used for inserting mounts)
   Node* Index::walk_path(const std::vector<std::string>& path_parts) {
     Node* node = &this->root_;
     for (std::size_t i = 0; i < path_parts.size(); ++i) {
@@ -58,10 +70,7 @@ namespace ck::index {
     if (node->entry) {
       throw Error<IndexErrc>{SecretExists, ck::path::join(path_parts)};
     }
-    
-    if (!node->children.empty()) {
-      throw Error<IndexErrc>{PathConflict, ck::path::join(path_parts) + " -> has children"};
-    }
+
     return node;
   }
 
@@ -80,5 +89,26 @@ namespace ck::index {
 
   Node* Index::get_parent(const std::string& path) {
     return this->get_parent(ck::path::parse_path(path));
+  }
+
+  bool Index::secret_along_path(const std::vector<std::string>& path_parts) {
+    Node* node = &this->root_;
+    for (std::size_t i = 0; i < path_parts.size(); ++i) {
+      if (node->entry){
+        return true;
+      }
+      
+      node = &node->children[path_parts[i]];
+    }
+    
+    if (node->entry) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  bool Index::secret_along_path(const std::string& path) {
+    return this->secret_along_path(ck::path::parse_path(path));
   }
 }

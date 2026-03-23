@@ -16,6 +16,11 @@ namespace ck::index {
     this->deserialize(vault_path); 
   }
 
+  Index::Index(const std::string& alias, const std::string& vault_path) { 
+    this->deserialize(vault_path); 
+    this->alias_ = alias;
+  }
+
   Index::Index() {}
 
   Node Index::root() {

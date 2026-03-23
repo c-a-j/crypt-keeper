@@ -81,6 +81,7 @@ namespace ck::util::error {
     AliasDoesNotExist,
     NoRoot,
     InvalidArguments,
+    SecretAlongAlias,
   };
   template<>
   inline std::string_view Error<MountErrc>::label(MountErrc c) {
@@ -93,6 +94,7 @@ namespace ck::util::error {
       case MountErrc::AliasDoesNotExist:      return "Alias does not exist";
       case MountErrc::NoRoot:                 return "There is no root vault";
       case MountErrc::InvalidArguments:       return "Invalid arguments";
+      case MountErrc::SecretAlongAlias:       return "There is a secret along this alias path";
       default:                                return "Unknown error";
     }
   }

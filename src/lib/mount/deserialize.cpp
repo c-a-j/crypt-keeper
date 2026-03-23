@@ -18,6 +18,7 @@ namespace ck::mount {
   void Mounts::deserialize() {
     fs::path path = ck::path::mount_file();
     if (!fs::exists(path)) {
+      logger.debug("Mounts::deserialize()");
       throw Error<MountErrc>{MountFileNotFound, "Initialize a vault or mount an existing one"};
     }
     auto mount_toml = toml::parse_file(std::string(path));

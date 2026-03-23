@@ -16,7 +16,9 @@ namespace ck::mount {
   using enum ck::util::error::MountErrc;
   
   ResolvedPath Mounts::resolve(const std::string& path) {
-    this->deserialize();
+    if (this->empty()) {
+      this->deserialize();
+    }
     
     ResolvedPath rp;
     auto parts = ck::path::parse_path(path);

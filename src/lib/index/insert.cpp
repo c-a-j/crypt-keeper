@@ -4,6 +4,7 @@
 #include "cli/types.hpp"
 
 #include "util/error.hpp"
+#include "util/logger/logger.hpp"
 
 #include "lib/config/types.hpp"
 #include "../path/parse_path.hpp"
@@ -17,6 +18,7 @@
 
   
 namespace {
+  using ck::util::logger::logger;
   using ck::util::error::Error;
   using ck::util::error::IndexErrc;
   using enum ck::util::error::IndexErrc;
@@ -72,6 +74,8 @@ namespace ck::index {
   }
 
   void Index::insert_node(const Node& node, const std::string& path) {
-     
+    std::vector<std::string> path_parts = ck::path::parse_path(path);
+    Node* parent = this->get_parent(path);
+    parent->children[path_parts[path_parts.size()-1]] = node;
   }
 }

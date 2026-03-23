@@ -6,6 +6,7 @@
 #include "util/error.hpp" 
 #include "util/logger/logger.hpp" 
 #include "lib/index/types.hpp"
+#include "lib/crypto/crypto.hpp"
 #include "./_internal/theme.hpp" 
 #include "../path/parse_path.hpp"
 #include "../path/join.hpp"
@@ -21,22 +22,32 @@ namespace {
 
   inline const std::string_view ARROW = " \u27F6  ";
 
-  void print_mount(const std::string& name, const std::string& path) {
+  void print_root(const std::string& path) {
     std::cout 
       << get_scheme_ansi(RootMountAlias)
-      << name
+      << APP_NAME
       << reset()
       << get_scheme_ansi(RootMountArrow)
       << ARROW
       << reset()
       << get_scheme_ansi(RootMountPath)
       << "(" << path << ")" 
-      << reset();
+      << reset()
+      << "\n";
   }
 
-  void print_root(const std::string& path) {
-    print_mount(std::string(APP_NAME), path);
-    std::cout << "\n";
+  void print_mount(const std::string& alias, const std::string& path) {
+    std::vector<std::string> alias_parts = ck::path::parse_path(alias);
+    std::cout 
+      << get_scheme_ansi(MountAlias)
+      << alias_parts[alias_parts.size()-1]
+      << reset()
+      << get_scheme_ansi(MountArrow)
+      << ARROW
+      << reset()
+      << get_scheme_ansi(MountPath)
+      << "(" << path << ")" 
+      << reset();
   }
 
   void print_top_node(const std::string& node_name) {
@@ -49,13 +60,16 @@ namespace {
 
   ck::index::Node find_node(ck::index::Node* root, const std::vector<std::string>& path_parts) {
     ck::index::Node* node = root;
+
     for (std::size_t i = 0; i < path_parts.size(); ++i) {
       node = &node->children[(path_parts[i])];
     }
+
     if (node->children.empty() && !node->entry) {
       logger.debug("Index::print() -> find_node()");
       throw Error<IndexErrc>{SecretNotFound, ck::path::join(path_parts)};
     }
+
     return *node;
   }
 
@@ -85,7 +99,7 @@ namespace {
           << get_scheme_ansi(EntryName) 
           << name 
           << reset();
-      } else if (!child.entry) {
+      } else if (!child.entry && !child.path) {
         std::cout
           << get_scheme_ansi(NodeName) 
           << name 
@@ -101,8 +115,13 @@ namespace {
 }
 
 namespace ck::index {
-  void Index::print() {
-    print_root(this->path_);
+  void Index::print(const bool is_root) {
+    if (is_root) {
+      print_root(this->path_);
+    } else {
+      print_mount(this->alias_, this->path_);
+      std::cout << "\n";
+    }
     print_tree(this->root_);
   }
 
@@ -111,7 +130,12 @@ namespace ck::index {
     Node node = find_node(&this->root_, path_parts);
 
     if (node.entry) {
-      logger.debug("this is a terminal node");
+      fs::path sec_file = this->path_ / node.entry->uuid;
+      ck::crypto::SecureBytes cipher = ck::crypto::read_file(sec_file);
+      ck::crypto::SecureBytes plain = ck::crypto::decrypt_bytes(cipher);
+      std::cout.write(plain.char_data(), static_cast<std::streamsize>(plain.size()));
+      std::cout << "\n";
+      return;
     } else {
       print_top_node(path_parts[path_parts.size() - 1]);
     }

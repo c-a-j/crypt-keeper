@@ -21,18 +21,22 @@ namespace ck::index {
   class Index {
     public:
       explicit Index(const std::string&);
+      explicit Index(const std::string&, const std::string&);
       explicit Index();
 
       const Node root() const;
       Node root();
       
       void deserialize(const std::string&);
+      void deserialize(const std::string&, const std::string&);
       void insert(const std::string&, const bool);
       void show(const std::optional<std::string>&);
       void write();
       void insert_node(const Node&, const std::string&);
-      void print();
+      void print(const bool = true);
       void print(const std::string&);
+      bool secret_along_path(const std::vector<std::string>&);
+      bool secret_along_path(const std::string&);
     
     private:
       Node root_;

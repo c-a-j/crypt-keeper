@@ -67,4 +67,9 @@ namespace ck::index {
     }
     this->root_.path = this->path_;
   }
+
+  void Index::deserialize(const std::string& alias, const std::string& vault_path) {
+    this->deserialize(vault_path);
+    this->alias_ = alias;
+  }
 }
