@@ -34,6 +34,7 @@ target_sources(ck_lib PRIVATE
     path/existence.cpp
     
     fs/msg.cpp
+    fs/sync_dir.cpp
     fs/write_atomic.cpp
 )
 

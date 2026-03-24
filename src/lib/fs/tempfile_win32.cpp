@@ -13,8 +13,8 @@
 namespace ck::fs {
   namespace fs = std::filesystem;
   using ck::util::error::Error;
-  using ck::util::error::PathErrc;
-  using enum ck::util::error::PathErrc;
+  using ck::util::error::FsErrc;
+  using enum ck::util::error::FsErrc;
   
   int last_error() noexcept {
     return static_cast<int>(::GetLastError());
@@ -27,14 +27,14 @@ namespace ck::fs {
     std::vector<wchar_t> buf(MAX_PATH);
     DWORD result = ::GetTempFileNameW(dir.c_str(), L"ckp", 0, buf.data());
     if (result == 0) {
-      throw Error<PathErrc>{MkstempFailed, msg(target, last_error())};
+      throw Error<FsErrc>{MkstempFailed, msg(target, last_error())};
     }
 
     try {
       path = buf.data();
     } catch (const std::exception& e) {
       ::DeleteFileW(buf.data());
-      throw Error<PathErrc>{FileSystemError, e.what()};
+      throw Error<FsErrc>{FileSystemError, e.what()};
     }
 
     handle = ::CreateFileW(
@@ -49,7 +49,7 @@ namespace ck::fs {
     if (handle == INVALID_HANDLE_VALUE) {
       int err = last_error();
       ::DeleteFileW(path.c_str());
-      throw Error<PathErrc>{OpenFailed, msg(path, err)};
+      throw Error<FsErrc>{OpenFailed, msg(path, err)};
     }
   }
 

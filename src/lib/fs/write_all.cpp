@@ -4,7 +4,7 @@
 #include "util/error.hpp"
 
 namespace ck::fs {
-  using enum ck::util::error::PathErrc;
+  using enum ck::util::error::FsErrc;
   
   int write_all(int fd, const char* data, std::size_t len) {
     std::size_t written = 0;

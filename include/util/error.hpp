@@ -181,42 +181,55 @@ namespace ck::util::error {
 
   enum class PathErrc {
     CreateDirectoryFailed,
-    HomeNotSet,
     DataHomeNotSet,
-    AppDataNotSet,
-    LocalAppDataNotSet,
-    FileSystemError,
-    FileDoesNotExist,
     DirectoryDoesNotExist,
     DoesNotExist,
-    MkstempFailed,
-    OpenFailed,
-    CloseFailed,
-    WriteFailed,
-    FlushFailed,
-    RenameFailed,
-    FsyncFailed,
+    FileDoesNotExist,
+    FileSystemError,
+    HomeNotSet,
+    LocalAppDataNotSet,
   };
   template<>
   inline std::string_view Error<PathErrc>::label(PathErrc c) {
     switch (c) {
       case PathErrc::CreateDirectoryFailed:   return "Failed to create config directory";
-      case PathErrc::HomeNotSet:              return "HOME not set";
       case PathErrc::DataHomeNotSet:          return "XDG_DATA_HOME not set";
-      case PathErrc::AppDataNotSet:           return "APPDATA not set";
-      case PathErrc::LocalAppDataNotSet:      return "LOCALAPPDATA not set";
-      case PathErrc::FileSystemError:         return "Filesystem error";
-      case PathErrc::FileDoesNotExist:        return "File does not exist";
       case PathErrc::DirectoryDoesNotExist:   return "Directory does not exist";
       case PathErrc::DoesNotExist:            return "Directory or file does not exist";
-      case PathErrc::MkstempFailed:           return "mkstemp failed";
-      case PathErrc::OpenFailed:              return "Failed to open file";
-      case PathErrc::CloseFailed:             return "Failed to close file";
-      case PathErrc::WriteFailed:             return "Failed to write to file";
-      case PathErrc::FlushFailed:             return "Failed to flush file";
-      case PathErrc::RenameFailed:            return "Failed to rename file";
-      case PathErrc::FsyncFailed:             return "Fsync failed";
+      case PathErrc::FileDoesNotExist:        return "File does not exist";
+      case PathErrc::FileSystemError:         return "Filesystem error";
+      case PathErrc::HomeNotSet:              return "HOME not set";
+      case PathErrc::LocalAppDataNotSet:      return "LOCALAPPDATA not set";
       default:                                return "Unknown error";
+    }
+  }
+
+  enum class FsErrc {
+    CloseFailed,
+    CreateDirectoryFailed,
+    FileSystemError,
+    FsyncFailed,
+    MkstempFailed,
+    OpenDirectoryFailed,
+    OpenFailed,
+    RenameFailed,
+    SyncDirectoryFailed,
+    WriteFailed,
+  };
+  template<>
+  inline std::string_view Error<FsErrc>::label(FsErrc c) {
+    switch (c) {
+      case FsErrc::CloseFailed:             return "Failed to close file";
+      case FsErrc::CreateDirectoryFailed:   return "Failed to create config directory";
+      case FsErrc::FileSystemError:         return "Filesystem error";
+      case FsErrc::FsyncFailed:             return "Fsync failed";
+      case FsErrc::MkstempFailed:           return "mkstemp failed";
+      case FsErrc::OpenDirectoryFailed:     return "Failed to open directory";
+      case FsErrc::OpenFailed:              return "Failed to open file";
+      case FsErrc::RenameFailed:            return "Failed to rename file";
+      case FsErrc::SyncDirectoryFailed:     return "Failed to sync directory";
+      case FsErrc::WriteFailed:             return "Failed to write to file";
+      default:                              return "Unknown error";
     }
   }
 }

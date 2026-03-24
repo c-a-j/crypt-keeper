@@ -1,13 +1,16 @@
 #include "toml++/toml.hpp"
 
 #include <filesystem>
+#include <sstream>
 #include <iostream>
 
 #include "util/error.hpp"
 #include "lib/config/types.hpp"
+#include "util/logger/logger.hpp"
+
+#include "../fs/write_atomic.hpp"
 #include "../path/path.hpp"
 #include "../path/existence.hpp"
-#include "util/logger/logger.hpp"
 
 
 namespace {
@@ -15,7 +18,6 @@ namespace {
   using ck::util::error::ConfigErrc;
   using enum ck::util::error::ConfigErrc;
   using ck::util::logger::logger;
-  namespace fs = std::filesystem;
   
   template <typename T>
   struct member_value;
@@ -136,7 +138,7 @@ namespace ck::config {
   }
   
   void Config::deserialize() {
-    fs::path path = ck::path::config_file();
+    std::filesystem::path path = ck::path::config_file();
     if (!ck::path::file_exists(path)) {
       core_.home = ck::path::vault_root();
       return;
@@ -222,18 +224,22 @@ namespace ck::config {
   void Config::write() {
     ck::path::create_config_dir();  
     toml::table tbl = serialize(*this);
-    fs::path cfg_file = ck::path::config_file();
-    bool exists = fs::exists(cfg_file);
-    std::ofstream out(cfg_file, std::ios::out | std::ios::trunc);
-    out << tbl << "\n";
-    if (!out) {
-      throw Error<ConfigErrc>{WriteConfigFailed, cfg_file.string()};
-    }
-    if (!exists) {
+    std::filesystem::path cfg_file = ck::path::config_file();
+    std::error_code ec;
+    bool existed = std::filesystem::exists(cfg_file, ec);
+    if (ec) { existed = false; }
+    
+    std::ostringstream contents;
+    contents << tbl << "\n";
+    
+    ck::fs::write_atomic(cfg_file, contents.str());
+    
+    if (!existed) {
       logger.info("Created new config file", cfg_file.string());
     } else {
       logger.info("Updated config file", cfg_file.string());
     }
+    this->print();
   }
   
   Config cfg;

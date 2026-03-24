@@ -14,8 +14,8 @@
 namespace ck::fs {
   namespace fs = std::filesystem;
   using ck::util::error::Error;
-  using ck::util::error::PathErrc;
-  using enum ck::util::error::PathErrc;
+  using ck::util::error::FsErrc;
+  using enum ck::util::error::FsErrc;
     
   TempFile::TempFile(const fs::path& target_) : target(target_) {
     std::string tmpl = target.string() + ".tmp.XXXXXX";
@@ -23,7 +23,7 @@ namespace ck::fs {
     buf.push_back('\0');
     fd = ::mkstemp(buf.data());
     if (fd == -1) {
-      throw Error<PathErrc>{MkstempFailed, msg(target, errno)};
+      throw Error<FsErrc>{MkstempFailed, msg(target, errno)};
     }
     
     try {
@@ -32,7 +32,7 @@ namespace ck::fs {
       ::close(fd);
       ::unlink(buf.data());
       fd = -1;
-      throw Error<PathErrc>{ FileSystemError, e.what() };
+      throw Error<FsErrc>{ FileSystemError, e.what() };
     }
   };
     
