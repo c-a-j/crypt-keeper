@@ -6,6 +6,7 @@
 #include "util/error.hpp"
 #include "lib/config/types.hpp"
 #include "../path/path.hpp"
+#include "../path/existence.hpp"
 #include "util/logger/logger.hpp"
 
 
@@ -136,22 +137,24 @@ namespace ck::config {
   
   void Config::deserialize() {
     fs::path path = ck::path::config_file();
-    if (!fs::exists(path)) {
+    if (!ck::path::file_exists(path)) {
       core_.home = ck::path::vault_root();
       return;
     }
     
+    toml::table cfg_toml;
     try {
-      auto cfg_toml = toml::parse_file(std::string(path));
-      for (auto& section : this->sections()) {
-        std::visit([&](auto& member) {
-          if (auto* tbl = cfg_toml[section.name].as_table()) {
-            parse_fields(this->*member, *tbl);
-          }
-        }, section.member);
-      }
+      cfg_toml = toml::parse_file(std::string(path));
     } catch (const toml::parse_error& e) {
       throw Error<ConfigErrc>{InvalidConfigFile, std::string(e.description())};
+    }
+
+    for (auto& section : this->sections()) {
+      std::visit([&](auto& member) {
+        if (auto* tbl = cfg_toml[section.name].as_table()) {
+          parse_fields(this->*member, *tbl);
+        }
+      }, section.member);
     }
   }
   

@@ -24,15 +24,19 @@ namespace ck::path {
     if (!vault_dir.empty()) return fs::path(vault_dir);
     
     #ifdef _WIN32
-      auto appdata = env_or_empty("APPDATA");
-      if (appdata.empty()) throw std::runtime_error("APPDATA is not set");
-      return fs::path(appdata) / APP_NAME;
+      std::string appdata = env_or_empty("LOCALAPPDATA");
+      if (appdata.empty()) {
+        throw Error<PathErrc>{LocalAppDataNotSet}; 
+      }
+      return fs::path(appdata) / APP_DIR / COLLECTION_HOME_DIR;
     #else
       auto xdg_data = env_or_empty("XDG_DATA_HOME");
       if (!xdg_data.empty()) return fs::path(xdg_data);
       
       auto home = env_or_empty("HOME");
-      if (home.empty()) throw std::runtime_error("HOME is not set");
+      if (home.empty()) { 
+        throw Error<PathErrc>{DataHomeNotSet}; 
+      }
       return fs::path(home) / ".local" / "share" / APP_DIR;
     #endif
   }
@@ -42,15 +46,19 @@ namespace ck::path {
     if (!cfg_dir.empty()) return fs::path(cfg_dir);
     
     #ifdef _WIN32
-      std::string appdata = env_or_empty("APPDATA");
-      if (appdata.empty()) throw std::runtime_error("APPDATA is not set");
-      return fs::path(appdata);
+      std::string appdata = env_or_empty("LOCALAPPDATA");
+      if (appdata.empty()) {
+        throw Error<PathErrc>{LocalAppDataNotSet}; 
+      }
+      return fs::path(appdata) / APP_DIR / fs::path("config");
     #else
       std::string xdg = env_or_empty("XDG_CONFIG_HOME");
       if (!xdg.empty()) return fs::path(xdg) / APP_DIR;
       
       auto home = env_or_empty("HOME");
-      if (home.empty()) throw std::runtime_error("HOME is not set");
+      if (home.empty()) { 
+        throw Error<PathErrc>{HomeNotSet}; 
+      }
       return fs::path(home) / ".config" / APP_DIR;
     #endif
   }
