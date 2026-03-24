@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <filesystem>
+#include <span>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -25,6 +27,7 @@ namespace ck::fs {
     TempFile(const TempFile&) = delete;
     TempFile& operator=(const TempFile&) = delete;
     
+    int write(std::span<const std::byte> bytes) noexcept;
     int write(const std::string& contents) noexcept;
 
     int sync() noexcept;

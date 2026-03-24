@@ -12,7 +12,7 @@ namespace ck::fs {
   using ck::util::error::FsErrc;
   using enum ck::util::error::FsErrc;
 
-  void write_atomic(const fs::path& target, const std::string& contents) {
+  void atomic_write(const fs::path& target, std::span<const std::byte> bytes) {
     std::error_code ec;
     fs::path parent = target.parent_path();
     if (!parent.empty()) {
@@ -23,7 +23,7 @@ namespace ck::fs {
     }
 
     TempFile tmp(target);
-    int err = tmp.write(contents);
+    int err = tmp.write(bytes);
     if (err) {
       throw Error<FsErrc>{WriteFailed, msg(tmp.path, err)};
     }
@@ -44,5 +44,11 @@ namespace ck::fs {
     }
     
     sync_dir(parent);
+  }
+  
+  void atomic_write(const fs::path& target, const std::string& contents) {
+    std::span<const char> chars(contents.data(), contents.size());
+    std::span<const std::byte> bytes = std::as_bytes(chars);
+    atomic_write(target, bytes);
   }
 }

@@ -1,13 +1,13 @@
 #include "lib/crypto/crypto.hpp"
 #include <gpgme.h>
-#include <stdexcept>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
 
+#include "util/error.hpp"
 #include "./lib/crypto/secure_wipe.hpp"
 #include "./lib/crypto/secure_bytes.hpp"
-#include "util/error.hpp"
+#include "../fs/atomic_write.hpp"
 
 namespace {
   using ck::util::error::Error;
@@ -223,7 +223,8 @@ namespace ck::crypto {
     }
     const SecureBytes cipher = encrypt_bytes(plain, key_fprs);
     
-    file.write(cipher.char_data(), static_cast<std::streamsize>(cipher.size()));
+    ck::fs::atomic_write(path, std::span(cipher.data(), cipher.size()));
+    
     if (!file) {
       throw Error<CryptoErrc>{FailedToReadFile, path.string()};
     }

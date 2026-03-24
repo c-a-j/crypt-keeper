@@ -53,9 +53,9 @@ namespace ck::fs {
     }
   }
 
-  int TempFile::write(const std::string& contents) noexcept {
-    const char* data = contents.data();
-    std::size_t remaining = contents.size();
+  int TempFile::write(std::span<const std::byte> bytes) noexcept {
+    const std::byte* data = bytes.data();
+    std::size_t remaining = bytes.size();
 
     while (remaining > 0) {
       DWORD chunk = remaining > static_cast<std::size_t>(std::numeric_limits<DWORD>::max())
@@ -68,11 +68,17 @@ namespace ck::fs {
       if (written == 0) {
         return ERROR_WRITE_FAULT;
       }
-      data += written;
-      remaining -= written;
+      std::size_t count = static_cast<std::size_t>(written);
+      data += count;
+      remaining -= count;
     }
 
     return 0;
+  }
+
+  int TempFile::write(const std::string& contents) noexcept {
+    std::span<const char> chars(contents.data(), contents.size());
+    return write(std::as_bytes(chars));
   }
 
   int TempFile::sync() noexcept {

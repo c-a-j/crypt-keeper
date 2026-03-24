@@ -36,8 +36,12 @@ namespace ck::fs {
     }
   };
     
-  int TempFile::write(const std::string& contents) noexcept {
-    return write_all(fd, contents.data(), contents.size());
+  int TempFile::write(std::span<const std::byte> bytes) noexcept {
+    return write_all(
+      fd, 
+      reinterpret_cast<const char*>(bytes.data()),
+      bytes.size()
+    );
   };
 
   int TempFile::sync() noexcept {

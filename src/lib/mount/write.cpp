@@ -1,14 +1,13 @@
 #include "toml++/toml.hpp"
-#include <iostream>
 #include <filesystem>
-#include <fstream>
+#include <sstream>
 #include <optional>
 
 #include "util/error.hpp"
 #include "util/logger/logger.hpp"
-#include "cli/types.hpp"
-#include "../path/path.hpp"
 #include "lib/mount/types.hpp"
+#include "../fs/atomic_write.hpp"
+#include "../path/path.hpp"
 
 
 namespace {
@@ -36,21 +35,20 @@ namespace {
 namespace ck::mount {
   namespace fs = std::filesystem;
   using ck::util::logger::logger;
-  using ck::util::error::Error;
-  using ck::util::error::MountErrc;
   using enum ck::util::error::MountErrc;
 
   void Mounts::write() {
     ck::path::create_config_dir();
     fs::path mnt_file = ck::path::mount_file();
-    bool exists = fs::exists(mnt_file);
-    std::ofstream out(mnt_file, std::ios::out | std::ios::trunc);
+    bool existed = fs::exists(mnt_file);
+    
+    std::ostringstream contents;
     toml::table tbl = serialize(*this);
-    out << tbl << "\n";
-    if (!out) {
-      throw Error<MountErrc>{WriteMountFailed, mnt_file.string()};
-    }
-    if (!exists) {
+    contents << tbl << "\n";
+    
+    ck::fs::atomic_write(mnt_file, contents.str());
+    
+    if (!existed) {
       logger.info("Created new mount file", mnt_file.string());
     }
   }

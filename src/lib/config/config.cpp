@@ -8,7 +8,7 @@
 #include "lib/config/types.hpp"
 #include "util/logger/logger.hpp"
 
-#include "../fs/write_atomic.hpp"
+#include "../fs/atomic_write.hpp"
 #include "../path/path.hpp"
 #include "../path/existence.hpp"
 
@@ -225,6 +225,7 @@ namespace ck::config {
     ck::path::create_config_dir();  
     toml::table tbl = serialize(*this);
     std::filesystem::path cfg_file = ck::path::config_file();
+    
     std::error_code ec;
     bool existed = std::filesystem::exists(cfg_file, ec);
     if (ec) { existed = false; }
@@ -232,7 +233,8 @@ namespace ck::config {
     std::ostringstream contents;
     contents << tbl << "\n";
     
-    ck::fs::write_atomic(cfg_file, contents.str());
+    logger.debug("Writing config file");
+    ck::fs::atomic_write(cfg_file, contents.str());
     
     if (!existed) {
       logger.info("Created new config file", cfg_file.string());

@@ -35,7 +35,7 @@ target_sources(ck_lib PRIVATE
     
     fs/msg.cpp
     fs/sync_dir.cpp
-    fs/write_atomic.cpp
+    fs/atomic_write.cpp
 )
 
 if (WIN32)

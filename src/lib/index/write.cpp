@@ -1,11 +1,13 @@
 #include "toml++/toml.hpp"
 #include <iostream>
+#include <sstream>
 #include <filesystem>
 #include <fstream>
 
-#include "./_internal/vars.hpp"
 #include "util/error.hpp"
 #include "lib/index/types.hpp"
+#include "./_internal/vars.hpp"
+#include "../fs/atomic_write.hpp"
 #include "../path/get_idx_file.hpp"
 
 namespace {
@@ -56,17 +58,15 @@ namespace ck::index {
   using enum ck::util::error::IndexErrc;
   
   void Index::write() {
-    toml::table idx_toml = serialize(*this);
+    toml::table tbl = serialize(*this);
 
     if (this->file_.empty()) {
       throw Error<IndexErrc>{NoPathToIndex, std::string("Index::write()")}; 
     }
     
-    std::ofstream out(this->file_);
-    if (!out) { 
-      throw Error<IndexErrc>{OpenIndexFailed, this->file_.string()}; 
-    }
+    std::ostringstream contents;
+    contents << tbl << "\n";
     
-    out << idx_toml << "\n";
+    ck::fs::atomic_write(this->file_, contents.str());
   }
 }
