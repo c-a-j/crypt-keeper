@@ -55,11 +55,13 @@ namespace ck::mount {
       ResolvedPath resolve(const std::string&);
       void print();
       bool empty() const noexcept;
+      bool file_exists() const noexcept;
 
     private:
       Mount root_;
       std::unordered_map<std::string, Mount> mounts_;
       void write();
+      fs::path path_;
   };
 
   extern Mounts mnt;

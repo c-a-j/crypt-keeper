@@ -17,15 +17,14 @@ namespace ck::mount {
   using enum ck::util::error::MountErrc;
 
   void Mounts::deserialize() {
-    fs::path path = ck::path::mount_file();
-    if (!ck::path::file_exists(path)) {
+    if (!ck::path::file_exists(this->path_)) {
       logger.debug("Mounts::deserialize()");
       throw Error<MountErrc>{MountFileNotFound, "Initialize a vault or mount an existing one"};
     }
 
     toml::table mount_toml;
     try {
-      mount_toml = toml::parse_file(path.string());
+      mount_toml = toml::parse_file(this->path_.string());
     } catch (const toml::parse_error& e) {
       throw Error<MountErrc>{InvalidMountFile, std::string(e.description())};
     }

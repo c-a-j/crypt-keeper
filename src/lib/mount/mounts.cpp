@@ -1,7 +1,11 @@
 #include "lib/mount/types.hpp"
+#include "../path/path.hpp"
+#include "../path/existence.hpp"
 
 namespace ck::mount {
-  Mounts::Mounts() {}
+  Mounts::Mounts() {
+    this->path_ = ck::path::mount_file();
+  }
 
   Mount& Mounts::root() {
     return this->root_;
@@ -21,6 +25,10 @@ namespace ck::mount {
 
   bool Mounts::empty() const noexcept {
     return (this->root_.path.empty() && this->mounts_.empty());
+  }
+  
+  bool Mounts::file_exists() const noexcept {
+    return (ck::path::file_exists(this->path_));
   }
 
   Mounts mnt;

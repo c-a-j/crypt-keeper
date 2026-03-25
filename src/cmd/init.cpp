@@ -20,6 +20,7 @@ namespace ck::cmd {
   using ck::util::error::InitErrc;
   using enum ck::util::error::InitErrc;
   using namespace ck::config;
+  using ck::mount::mnt;
     
   void init(const ck::cli::Context& _, const ck::cli::InitArgs& args) {
     Config cfg;
@@ -49,9 +50,11 @@ namespace ck::cmd {
 
     std::string msg1;
     msg1 += "Vault " + args.vault_name + " has been initialized";
-    std::string msg2;
-    msg2 += "use 'ck mount' to mount it";
+    logger.info(msg1);
     
-    logger.info(msg1, msg2);
+    if (!ck::mount::mnt.file_exists()) {
+      logger.info("Welcome to Crypt Keeper - the spooky password manager");
+      ck::mount::mnt.chroot(vault_path);
+    }
   }
 }
