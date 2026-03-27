@@ -27,8 +27,8 @@ namespace ck::index {
   // used for clearing a trail through the intex tree
   // does not allow secrets anywhere along the path (secrets are always terminal nodes)
   // does not allow terminal node to have children (this is used for inserting entries)
-  Node* Index::break_trail(const std::vector<std::string>& path_parts) {
-    Node* node = &this->root_;
+  Node* break_trail(Node& root, const std::vector<std::string>& path_parts) {
+    Node* node = &root;
     for (std::size_t i = 0; i < path_parts.size(); ++i) {
       if (node->entry){
         logger.debug("Index::break_trail()");
@@ -50,13 +50,17 @@ namespace ck::index {
     return node;
   }
 
+  Node* Index::break_trail(const std::vector<std::string>& path_parts) {
+    return ck::index::break_trail(this->root_, path_parts);
+  }
+
   Node* Index::break_trail(const std::string& path) {
     return this->break_trail(ck::path::parse_path(path));
   }
 
   // used for clearing a trail through the intex tree before inserting a mount
   // does not allow secrets anywhere along the path (extra check, Mounts::mount() already checks for this)
-  // returns the last node in the path (this is used for inserting mounts)
+  // returns the last node in the path
   Node* Index::walk_path(const std::vector<std::string>& path_parts) {
     Node* node = &this->root_;
     for (std::size_t i = 0; i < path_parts.size(); ++i) {

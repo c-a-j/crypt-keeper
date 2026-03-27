@@ -150,21 +150,26 @@ namespace ck::index {
   namespace fs = std::filesystem;
 
   void Index::deserialize(const std::string& vault_path) {
-    this->path_ = fs::path(vault_path);
-    this->file_ = this->path_ / fs::path(INDEX_FILE);
-    toml::table tbl = parse_file(this->file_);
+    fs::path path = fs::path(vault_path);
+    fs::path file = path / fs::path(INDEX_FILE);
+    toml::table tbl = parse_file(file);
 
     logger.debug("deserialize() - parsing index file");
+    Node root;
     if (toml::array* entries = tbl[IDX_ARR_NAME].as_array()) {
       for (toml::node& n : *entries) {
-        IndexObj obj = parse_entry(n, this->file_);
-        Node* node = this->break_trail(obj.path);
+        IndexObj obj = parse_entry(n, file);
+        Node* node = ck::index::break_trail(root, obj.path);
         node->entry = Entry{obj.uuid};
       }
     } else {
-      throw Error<IndexErrc>{InvalidOrEmptyIndexFile, this->file_};
+      throw Error<IndexErrc>{InvalidOrEmptyIndexFile, file};
     }
-    this->root_.path = this->path_;
+
+    this->root_ = root;
+    this->path_ = path;
+    this->root_.path = path;
+    this->file_ = file;
   }
 
   void Index::deserialize(const std::string& alias, const std::string& vault_path) {

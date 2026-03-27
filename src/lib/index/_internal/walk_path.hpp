@@ -4,5 +4,6 @@
 #include "lib/index/types.hpp"
 
 namespace ck::index { 
-  Node* walk_path(Node*, const std::vector<std::string>);
+  Node* walk_path(Node*, const std::vector<std::string>&);
+  Node* break_trail(Node&, const std::vector<std::string>&);
 }
