@@ -4,6 +4,10 @@ target_sources(ck_lib PRIVATE
     crypto/secure_wipe.cpp
     
     config/config.cpp
+    config/deserialize.cpp
+    config/print.cpp
+    config/set.cpp
+    config/write.cpp
     
     input/wisper.cpp
     

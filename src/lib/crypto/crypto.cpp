@@ -217,17 +217,8 @@ namespace ck::crypto {
   }
   
   void write(const SecureBytes& plain, const std::vector<std::string>& key_fprs, const std::filesystem::path& path) {
-    std::ofstream file(path, std::ios::binary | std::ios::trunc);
-    if (!file) {
-      throw Error<CryptoErrc>{FailedToOpenFile, path.string()};
-    }
     const SecureBytes cipher = encrypt_bytes(plain, key_fprs);
-    
     ck::fs::atomic_write(path, std::span(cipher.data(), cipher.size()));
-    
-    if (!file) {
-      throw Error<CryptoErrc>{FailedToReadFile, path.string()};
-    }
   };
   
 }

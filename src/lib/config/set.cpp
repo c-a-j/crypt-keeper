@@ -1,0 +1,70 @@
+#include "toml++/toml.hpp"
+
+#include <sstream>
+
+#include "util/error.hpp"
+#include "lib/config/types.hpp"
+#include "util/logger/logger.hpp"
+
+namespace {
+  using namespace ck::config;
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
+  using ck::util::logger::logger;
+
+  std::vector<std::string> parse_key(std::string_view key) {
+    std::string part;
+    std::stringstream ss(key.data());
+    std::vector<std::string> key_parts;
+    key_parts.reserve(2);
+    
+    while (std::getline(ss, part, '.')) {
+      key_parts.push_back(part);
+    }
+    return key_parts;
+  }
+}
+
+
+namespace ck::config {
+  using ck::util::error::Error;
+  using ck::util::error::ConfigErrc;
+  using enum ck::util::error::ConfigErrc;
+  using ck::util::logger::logger;
+  
+  int parse_int(const std::string& key, const std::string& value) {
+    std::size_t pos = 0;
+    int out;
+    try {
+      out = std::stoi(value, &pos);
+    } catch (const std::invalid_argument&) {
+      throw Error<ConfigErrc>{InvalidConfigValue, key + " = " + value};
+    } catch (const std::out_of_range&) {
+      throw Error<ConfigErrc>{InvalidConfigValue, key + " = " + value};
+    }
+    
+    if (pos != value.size()) {
+      throw Error<ConfigErrc>{InvalidConfigValue, key + " = " + value};
+    }
+    return out;
+  }
+  
+  void Config::set(std::vector<std::string> args) {
+    std::vector<std::string> key_parts = parse_key(args[0]);
+    std::string value = args[1];
+    if (key_parts.size() != 2) {
+      throw Error<ConfigErrc>{InvalidConfigKey, std::string(args[0])};
+    }
+    with_member(key_parts[0], key_parts[1], [&](auto& member){
+      using T = std::remove_cvref_t<decltype(member)>;
+      if constexpr (std::is_same_v<T, std::string>) {
+        member = value;
+      } else if constexpr (std::is_same_v<T, bool>) {
+        member = (value == "true");
+      } else if constexpr (std::is_same_v<T, int>) {
+        member = parse_int(args[0], value);
+      }
+    });
+  }
+}
