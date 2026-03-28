@@ -47,20 +47,20 @@ namespace ck::mount {
     // vault is mounted as the root vault
     // otherwise, the vault is mounted at the supplied alias
     if (!mnt_file_exists) {
-      this->root_.path = vault_path;
-      this->root_.hash = hash();
-      this->write();
+      this->state_.root.path = vault_path;
+      this->state_.root.hash = hash();
+      this->save();
       this->print();
       return;
     }
 
-    if (this->mounts_.contains(alias)) {
+    if (this->state_.mounts.contains(alias)) {
       throw Error<MountErrc>{AliasExists, alias};
     }
 
-    this->mounts_[alias].path = vault_path;
-    this->mounts_[alias].hash = hash();
-    this->write();
+    this->state_.mounts[alias].path = vault_path;
+    this->state_.mounts[alias].hash = hash();
+    this->save();
     this->print();
   }
 

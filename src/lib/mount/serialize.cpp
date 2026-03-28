@@ -19,38 +19,21 @@ namespace {
     tbl.insert_or_assign("hash", m.hash);
     return tbl;
   }
+}
 
-  toml::table serialize(const ck::mount::Mounts& mounts) {
+namespace ck::mount::codec {
+  using ck::util::logger::logger;
+  using enum ck::util::error::MountErrc;
+
+  toml::table serialize(const ck::mount::State& state) {
     toml::table tbl; 
-    tbl.insert("root", create_table(mounts.root()));
+    tbl.insert("root", create_table(state.root));
 
     toml::array mnts;
-    for (auto [k, mnt] : mounts.mounts()) {
+    for (auto [k, mnt] : state.mounts) {
       mnts.push_back(create_table(mnt, k));
     }
     tbl.insert("mount", mnts);
     return tbl;
-  }
-}
-
-namespace ck::mount {
-  namespace fs = std::filesystem;
-  using ck::util::logger::logger;
-  using enum ck::util::error::MountErrc;
-
-  void Mounts::write() {
-    ck::path::create_config_dir();
-    fs::path mnt_file = ck::path::mount_file();
-    bool existed = ck::path::file_exists(mnt_file);
-    
-    std::ostringstream contents;
-    toml::table tbl = serialize(*this);
-    contents << tbl << "\n";
-    
-    ck::fio::atomic_write(mnt_file, contents.str());
-    
-    if (!existed) {
-      logger.info("Created new mount file", mnt_file.string());
-    }
   }
 }

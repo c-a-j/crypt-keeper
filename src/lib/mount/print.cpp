@@ -138,7 +138,7 @@ namespace {
 namespace ck::mount {
   void Mounts::print() {
     if (this->empty()) {
-      this->deserialize();
+      this->load();
     }
     Node root = mount_tree(*this);
     print_tree(root);

@@ -28,8 +28,9 @@ namespace ck::index {
     const crypto::SecureBytes cipher = crypto::read_file(file);
     const crypto::SecureBytes plain = crypto::decrypt_bytes(cipher);
 
-    this->root_ = codec::deserialize(std::string_view(plain.char_data(), plain.size()), this->file_);
+    this->root_ = codec::deserialize(std::string_view(plain.char_data(), plain.size()), path);
     this->path_ = path;
+    this->root_.path = path;
     this->file_ = file;
     this->alias_ = alias;
   }

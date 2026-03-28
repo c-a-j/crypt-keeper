@@ -32,6 +32,11 @@ namespace ck::mount {
     static constexpr const std::string_view k_name = "mount";
   };
 
+  struct State {
+    Mount root;
+    std::unordered_map<std::string, Mount> mounts;
+  };
+
   struct ResolvedPath {
     std::string alias;
     fs::path vault_path;
@@ -44,10 +49,10 @@ namespace ck::mount {
 
       Mount& root();
       const Mount& root() const;
+
       std::unordered_map<std::string, Mount>& mounts();
       const std::unordered_map<std::string, Mount>& mounts() const;
 
-      void deserialize();
       void mount(const std::string&, const std::string&);
       void mount(const std::string&);
       void umount(const std::string&);
@@ -57,10 +62,11 @@ namespace ck::mount {
       bool empty() const noexcept;
       bool file_exists() const noexcept;
 
+      void load();
+      void save();
+
     private:
-      Mount root_;
-      std::unordered_map<std::string, Mount> mounts_;
-      void write();
+      State state_;
       fs::path file_;
   };
 

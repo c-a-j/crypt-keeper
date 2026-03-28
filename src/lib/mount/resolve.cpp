@@ -17,7 +17,7 @@ namespace ck::mount {
   
   ResolvedPath Mounts::resolve(const std::string& path) {
     if (this->empty()) {
-      this->deserialize();
+      this->load();
     }
     
     ResolvedPath rp;
@@ -25,8 +25,8 @@ namespace ck::mount {
 
     for (std::size_t n = parts.size(); n > 0; --n) {
       std::string alias = ck::path::join_prefix(parts, n);
-      auto it = this->mounts_.find(alias);
-      if (it != this->mounts_.end()) {
+      auto it = this->state_.mounts.find(alias);
+      if (it != this->state_.mounts.end()) {
         rp.alias = alias;
         rp.vault_path = it->second.path;
         rp.relative_path = ck::path::join_suffix(parts, n);
@@ -34,7 +34,7 @@ namespace ck::mount {
       }
     }
     rp.alias = {};
-    rp.vault_path = root_.path;
+    rp.vault_path = this->state_.root.path;
     rp.relative_path = ck::path::join_suffix(parts, 0);
     return rp;
   }

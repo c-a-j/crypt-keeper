@@ -1,0 +1,51 @@
+#include "toml++/toml.hpp"
+#include <filesystem>
+#include <optional>
+#include <fstream>
+
+#include "util/error.hpp"
+#include "util/logger/logger.hpp"
+#include "../path/path.hpp"
+#include "../path/existence.hpp"
+#include "./_internal/codec.hpp"
+#include "../fio/atomic_write.hpp"
+#include "lib/mount/types.hpp"
+
+namespace ck::mount {
+  namespace fs = std::filesystem;
+  using ck::util::logger::logger;
+  using ck::util::error::Error;
+  using ck::util::error::MountErrc;
+  using enum ck::util::error::MountErrc;
+
+  void Mounts::load() {
+    if (!ck::path::file_exists(this->file_)) {
+      logger.debug("ck::mount::load()");
+      throw Error<MountErrc>{MountFileNotFound, "Initialize a vault or mount an existing one"};
+    }
+    
+    std::ifstream in(this->file_, std::ios::binary);
+    std::string text(
+      (std::istreambuf_iterator<char>(in)),
+      std::istreambuf_iterator<char>());
+    
+    State state = codec::deserialize(text, this->file_.string());
+    this->state_ = state;
+  }
+
+  void Mounts::save() {
+    ck::path::create_config_dir();
+    fs::path mnt_file = ck::path::mount_file();
+    bool existed = ck::path::file_exists(mnt_file);
+    
+    std::ostringstream contents;
+    toml::table tbl = codec::serialize(this->state_);
+    contents << tbl << "\n";
+    
+    ck::fio::atomic_write(mnt_file, contents.str());
+    
+    if (!existed) {
+      logger.info("Created new mount file", mnt_file.string());
+    }
+  }
+}

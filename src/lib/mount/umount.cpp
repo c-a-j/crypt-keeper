@@ -15,16 +15,16 @@ namespace ck::mount {
   void Mounts::umount(const std::string& alias) {
     fs::path mnt_file = ck::path::mount_file();
     if (ck::path::exists(mnt_file)) {
-      deserialize();
+      this->load();
     } else {
       throw Error<MountErrc>{MountFileNotFound, mnt_file.string()};
     }
-    if (mounts_.contains(alias)) {
-      mounts_.erase(alias);
+    if (this->state_.mounts.contains(alias)) {
+      this->state_.mounts.erase(alias);
     } else {
       throw Error<MountErrc>{AliasDoesNotExist, alias};
     }
-    this->write();
+    this->save();
     logger.info(alias + std::string(" has been unmounted"));
     this->print();
   }

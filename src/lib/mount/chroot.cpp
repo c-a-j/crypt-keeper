@@ -33,11 +33,11 @@ namespace ck::mount {
     }
 
     if (ck::path::file_exists(mnt_file)) {
-      this->deserialize();
+      this->load();
     }
-    this->root_.path = vault_path;
-    this->root_.hash = hash();
-    this->write();
+    this->state_.root.path = vault_path;
+    this->state_.root.hash = hash();
+    this->save();
     logger.info("Root vault has been set to " + vault_path.string());
     this->print();
     return;

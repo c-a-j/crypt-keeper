@@ -43,7 +43,7 @@ namespace ck::cmd {
     // if printing from root vault, generate an index for every mount
     // root nodes will need to be inserted in their alias locations for printing
 
-    mnt.deserialize();
+    mnt.load();
     
 
     if (!args.path) {

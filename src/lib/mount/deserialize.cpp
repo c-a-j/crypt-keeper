@@ -78,32 +78,26 @@ namespace {
   }
 }
 
-
-namespace ck::mount {
+namespace ck::mount::codec {
   namespace fs = std::filesystem;
   using ck::util::logger::logger;
   using ck::util::error::Error;
   using ck::util::error::MountErrc;
   using enum ck::util::error::MountErrc;
 
-  void Mounts::deserialize() {
-    if (!ck::path::file_exists(this->file_)) {
-      logger.debug("Mounts::deserialize()");
-      throw Error<MountErrc>{MountFileNotFound, "Initialize a vault or mount an existing one"};
-    }
-
+  State deserialize(std::string_view toml_text, const std::string& file_path) {
     toml::table mount_toml;
     try {
-      mount_toml = toml::parse_file(this->file_.string());
+      mount_toml = toml::parse(toml_text);
     } catch (const toml::parse_error& e) {
       throw Error<MountErrc>{InvalidMountFile, std::string(e.description())};
     }
-
-    Mount root;
+    
+    State state;
     if (auto* tbl = mount_toml["root"].as_table()) {
-      root = parse_root(*tbl, this->file_);
+      state.root = parse_root(*tbl, file_path);
     } else {
-      std::string msg = std::string(this->file_) + " does not contain a root mount";
+      std::string msg = file_path + " does not contain a root mount";
       throw Error<MountErrc>{InvalidMountFile, msg};
     }
 
@@ -112,14 +106,13 @@ namespace ck::mount {
 
     if (mount_node) {
       if (const toml::array* arr = mount_toml["mount"].as_array()) {
-        mounts = parse_mounts(*arr, this->file_);
+        state.mounts = parse_mounts(*arr, file_path);
       } else {
-        std::string msg = std::string(this->file_) + " -> mount must be an array";
+        std::string msg = file_path + " -> mount must be an array";
         throw Error<MountErrc>{InvalidMountFile, msg};
       }
     }
 
-    this->root_ = root;
-    this->mounts_ = mounts;
+    return state;
   }
 }

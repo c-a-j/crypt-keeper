@@ -23,15 +23,16 @@ target_sources(ck_lib PRIVATE
     
     mount/chroot.cpp
     mount/deserialize.cpp
+    mount/fio.cpp
     mount/hash.cpp
     mount/initialized.cpp
     mount/mount.cpp
     mount/mounts.cpp
     mount/print.cpp
     mount/resolve.cpp
+    mount/serialize.cpp
     mount/theme.cpp
     mount/umount.cpp
-    mount/write.cpp
     
     path/existence.cpp
     path/get_gpg_id_file.cpp
