@@ -13,7 +13,7 @@
 #include "lib/input/wisper.hpp"
 
 #include "lib/index/types.hpp"
-#include "./_internal/walk_path.hpp"
+#include "./_internal/tree.hpp"
 #include "./_internal/fingerprints.hpp"
 
   
@@ -56,7 +56,7 @@ namespace ck::index {
 
     ck::index::Entry entry;
     entry.uuid = flat.uuid;
-    Node* node = this->break_trail(flat.path);
+    Node* node = tree::break_trail(&this->root_, flat.path);
     
     const SecureBytes secret = (pwgen) 
         ? ck::crypto::pwgen() 
@@ -75,7 +75,7 @@ namespace ck::index {
 
   void Index::insert_node(const Node& node, const std::string& path) {
     std::vector<std::string> path_parts = ck::path::parse_path(path);
-    Node* parent = this->get_parent(path);
+    Node* parent = tree::get_parent(&this->root_, path);
     parent->children[path_parts[path_parts.size()-1]] = node;
   }
 }

@@ -32,11 +32,11 @@ namespace ck::index {
     return idx;
   }
 
-  Node Index::root() {
+  Node& Index::root() {
     return this->root_;
   }
 
-  const Node Index::root() const {
+  const Node& Index::root() const {
     return this->root_;
   }
 }

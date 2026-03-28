@@ -4,7 +4,7 @@
 #include "lib/index/types.hpp"
 #include "./util/error.hpp"
 #include "./util/logger/logger.hpp"
-#include "./_internal/walk_path.hpp"
+#include "./_internal/tree.hpp"
 #include "./_internal/types.hpp"
 #include "./_internal/vars.hpp"
 

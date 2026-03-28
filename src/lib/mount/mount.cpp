@@ -4,6 +4,7 @@
 #include "util/logger/logger.hpp"
 #include "../path/path.hpp"
 #include "../path/parse_path.hpp"
+#include "../index/_internal/tree.hpp"
 #include "lib/mount/types.hpp"
 #include "lib/index/types.hpp"
 #include "lib/config/types.hpp"
@@ -25,7 +26,7 @@ namespace ck::mount {
       ResolvedPath rp = this->resolve(alias);
       ck::index::Index idx(rp.vault_path);
 
-      if (idx.secret_along_path(rp.relative_path)) {
+      if (ck::index::tree::secret_along_path(&idx.root(), rp.relative_path)) {
         throw Error<MountErrc>{SecretAlongAlias, alias};
       }
     }

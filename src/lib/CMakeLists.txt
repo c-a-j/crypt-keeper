@@ -19,7 +19,7 @@ target_sources(ck_lib PRIVATE
     index/print.cpp
     index/serialize.cpp
     index/theme.cpp
-    index/walk_path.cpp
+    index/tree.cpp
     
     mount/chroot.cpp
     mount/deserialize.cpp

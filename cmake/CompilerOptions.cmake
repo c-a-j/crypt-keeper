@@ -14,7 +14,11 @@ function(ck_apply_compiler_options target)
     )
     
     if (CK_WARNINGS_AS_ERRORS)
-      target_compile_options(${target} PRIVATE -Werror -Wno-error=unused-parameter)
+      target_compile_options(${target} PRIVATE
+        -Werror
+        -Wno-error=unused-parameter
+        -Wno-error=unused-function
+      )
     endif()
     
     if (CK_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
