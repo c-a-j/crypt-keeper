@@ -20,6 +20,7 @@ ck_apply_compiler_options(crypto_test)
 add_executable(config_test
   config_test.cpp
   ../util/gen_key.cpp
+  ../util/scoped_config_dir.cpp
 )
 target_link_libraries(config_test PRIVATE
   ck_lib

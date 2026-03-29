@@ -24,9 +24,6 @@ class InitTest : public ::testing::Test {
       crypto::init_gpgme();
       store_root_ = std::make_unique<ScopedVaultRoot>();
       config_dir_ = std::make_unique<ScopedConfigDir>();
-      
-      args_.vault_name = "test-vault";
-      args_.key_fpr = generate_tmp_key();
     }
     void TearDown() override {
       gnupg_home_.reset();
@@ -35,10 +32,18 @@ class InitTest : public ::testing::Test {
 };
 
 TEST_F(InitTest, InitNewVaultNoThrow) {
+  args_.vault_name = "test-vault";
+  args_.key_fpr = generate_tmp_key();
   EXPECT_NO_THROW(ck::cmd::init(ctx_, args_));
 }
 
 TEST_F(InitTest, InitExistingStoreThrows) {
+  args_.vault_name = "test-vault";
+  args_.key_fpr = generate_tmp_key();
   ck::cmd::init(ctx_, args_);
+  EXPECT_THROW(ck::cmd::init(ctx_, args_), ck::util::error::AppError);
+}
+
+TEST_F(InitTest, InitStoreEmptyArgsThrows) {
   EXPECT_THROW(ck::cmd::init(ctx_, args_), ck::util::error::AppError);
 }
