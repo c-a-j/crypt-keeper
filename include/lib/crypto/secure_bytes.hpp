@@ -27,6 +27,10 @@ namespace ck::crypto {
         secure_wipe(data_.data(), data_.size());
       }
       
+      bool operator==(const SecureBytes& other) const {
+        return std::ranges::equal(this->data_, other.data_);
+      }
+      
       std::byte* data() { return data_.data(); }
       const std::byte* data() const { return data_.data(); }
       std::size_t size() const { return data_.size(); }

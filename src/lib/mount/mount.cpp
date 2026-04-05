@@ -18,7 +18,7 @@ namespace ck::mount {
   using ck::util::error::MountErrc;
   using enum ck::util::error::MountErrc;
 
-  void Mounts::mount(const std::string& alias, const std::string& path) {
+  void Mounts::mount(const std::string& path, const std::string& alias) {
     fs::path mnt_file = ck::path::mount_file();
     bool mnt_file_exists = fs::exists(mnt_file);
 

@@ -62,7 +62,7 @@ namespace ck::index {
     auto wisper = [](this auto&& self) -> const SecureBytes {
       SecureBytes listen1 = ck::input::wisper("Enter secret:");   
       SecureBytes listen2 = ck::input::wisper("Confirm secret:");   
-      if (listen1.data() != listen2.data()) {
+      if (listen1 != listen2) {
         logger.error("Inputs do not match", "try again");
         self();
       }
