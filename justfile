@@ -18,7 +18,7 @@ configure build_type="Debug" sanitizers="OFF" tests="OFF" debug_logs="OFF" clang
     -DBUILD_TESTING={{ tests }} \
     -DCK_ENABLE_CLANG_TIDY={{ clang_tidy }}
 
-build tests="OFF": (configure "Debug" "ON" (tests) "ON" "ON")
+build tests="OFF": (configure "Debug" "ON" (tests) "ON" "OFF")
   cmake --build {{ build_dir }} -- -j$(nproc)
 
 release: (configure "Release" "OFF" "OFF" "OFF" "OFF")
@@ -30,7 +30,7 @@ run *args: build
 test filter="": (build ("ON"))
   cd {{ build_dir }} && ctest --output-on-failure {{ if filter != "" { "-R " + filter } else { "" }}} 
   
-lint: (configure "Debug" "OFF" "OFF" "ON" "ON")
+lint: (configure "Debug" "ON" "OFF" "ON" "ON")
   cmake --build {{ build_dir }} --clean-first -- -j$(nproc)
 
 [unix]

@@ -16,6 +16,8 @@ option(CK_ENABLE_DEBUG_LOGS "Enable debug logging" ${CK_ENABLE_DEBUG_LOGS_DEFAUL
 option(CK_ENABLE_CLANG_TIDY "Enable clang-tidy" OFF)
 if(CK_ENABLE_CLANG_TIDY)
   set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+else()
+  unset(CMAKE_CXX_CLANG_TIDY CACHE)
 endif()
 
 find_package(PkgConfig REQUIRED)

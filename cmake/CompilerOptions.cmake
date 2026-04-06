@@ -33,8 +33,10 @@ function(ck_apply_compiler_options target)
     
   endif()
 
-  find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-  if (CLANG_TIDY_EXE)
-    set_target_properties(${target} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+  if (CK_ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+    if (CLANG_TIDY_EXE)
+      set_target_properties(${target} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+    endif()
   endif()
 endfunction()
