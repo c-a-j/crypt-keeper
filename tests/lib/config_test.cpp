@@ -129,17 +129,19 @@ class ConfigTest : public ::testing::Test {
 
     void write_config_object(Config& cfg) const {
       capture_stdout([&] {
-        cfg.write();
+        cfg.save();
       });
     }
 };
 
 TEST_F(ConfigTest, InitializeDefaultConfigNoThrow) {
-  EXPECT_NO_THROW(Config cfg);
+  Config cfg;
+  EXPECT_NO_THROW(cfg.load());
 }
 
 TEST_F(ConfigTest, MissingConfigFileUsesDefaults) {
   Config cfg;
+  cfg.load();
 
   expect_default_values(cfg);
   EXPECT_FALSE(ck::path::file_exists(config_file()));
@@ -164,6 +166,7 @@ lowercase = 11
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
   EXPECT_FALSE(cfg.core().autopush);
@@ -182,7 +185,8 @@ TEST_F(ConfigTest, MalformedTomlThrows) {
 home = "/tmp/test-vault"
 )toml");
 
-  EXPECT_THROW(Config cfg, ck::util::error::AppError);
+  Config cfg;
+  EXPECT_THROW(cfg.load(), ck::util::error::AppError);
 }
 
 TEST_F(ConfigTest, MissingSectionUsesDefaults) {
@@ -201,6 +205,7 @@ lowercase = 18
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
   EXPECT_FALSE(cfg.core().autopush);
@@ -231,6 +236,7 @@ lowercase = 18
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_FALSE(cfg.core().autopush);
   EXPECT_FALSE(cfg.core().autosync);
@@ -256,6 +262,7 @@ lowercase = 10
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_EQ(cfg.pwgen().length, 31);
   EXPECT_EQ(cfg.pwgen().symbols, 6);
@@ -283,16 +290,17 @@ lowercase = 9
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
   EXPECT_FALSE(cfg.core().autopush);
   EXPECT_TRUE(cfg.core().autosync);
   EXPECT_FALSE(cfg.ui().insert_with_editor);
   EXPECT_EQ(cfg.pwgen().length, 20);
-  EXPECT_EQ(cfg.pwgen().symbols, 6);
-  EXPECT_EQ(cfg.pwgen().numbers, 7);
-  EXPECT_EQ(cfg.pwgen().uppercase, 8);
-  EXPECT_EQ(cfg.pwgen().lowercase, 9);
+  EXPECT_EQ(cfg.pwgen().symbols, 5);
+  EXPECT_EQ(cfg.pwgen().numbers, 5);
+  EXPECT_EQ(cfg.pwgen().uppercase, 5);
+  EXPECT_EQ(cfg.pwgen().lowercase, 5);
 }
 
 TEST_F(ConfigTest, MissingCoreHomeMakesConstHomeThrow) {
@@ -313,6 +321,7 @@ lowercase = 10
 )toml");
 
   Config cfg;
+  cfg.load();
   const Config& const_cfg = cfg;
 
   EXPECT_TRUE(cfg.core().home.empty());
@@ -337,6 +346,7 @@ lowercase = 10
 )toml");
 
   Config cfg;
+  cfg.load();
 
   EXPECT_TRUE(cfg.core().home.empty());
   EXPECT_EQ(cfg.home(), ck::path::vault_root().string());
@@ -345,6 +355,7 @@ lowercase = 10
 
 TEST_F(ConfigTest, SetStringFieldUpdatesValue) {
   Config cfg;
+  cfg.load();
 
   cfg.set({"core.home", "/tmp/override-vault"});
 
@@ -353,6 +364,7 @@ TEST_F(ConfigTest, SetStringFieldUpdatesValue) {
 
 TEST_F(ConfigTest, SetBoolFieldUpdatesTrueAndFalse) {
   Config cfg;
+  cfg.load();
 
   cfg.set({"core.autopush", "false"});
   cfg.set({"ui.insert_with_editor", "true"});
@@ -363,6 +375,7 @@ TEST_F(ConfigTest, SetBoolFieldUpdatesTrueAndFalse) {
 
 TEST_F(ConfigTest, SetIntFieldUpdatesValue) {
   Config cfg;
+  cfg.load();
 
   cfg.set({"pwgen.length", "48"});
 
@@ -371,18 +384,21 @@ TEST_F(ConfigTest, SetIntFieldUpdatesValue) {
 
 TEST_F(ConfigTest, SetRejectsUnknownSection) {
   Config cfg;
+  cfg.load();
 
   EXPECT_THROW(cfg.set({"foobar.length", "48"}), ck::util::error::AppError);
 }
 
 TEST_F(ConfigTest, SetRejectsUnknownMember) {
   Config cfg;
+  cfg.load();
 
   EXPECT_THROW(cfg.set({"core.foobar", "true"}), ck::util::error::AppError);
 }
 
 TEST_F(ConfigTest, SetRejectsMalformedKeys) {
   Config cfg;
+  cfg.load();
   const std::vector<std::string> invalid_keys {
     "core",
     "core.home.extra",
@@ -398,6 +414,7 @@ TEST_F(ConfigTest, SetRejectsMalformedKeys) {
 
 TEST_F(ConfigTest, SetRejectsInvalidInteger) {
   Config cfg;
+  cfg.load();
   const std::vector<std::string> invalid_values {
     "foobar",
     "12abc",
@@ -412,6 +429,7 @@ TEST_F(ConfigTest, SetRejectsInvalidInteger) {
 
 TEST_F(ConfigTest, WriteCreatesConfigDirAndFile) {
   Config cfg;
+  cfg.load();
 
   write_config_object(cfg);
 
@@ -421,6 +439,7 @@ TEST_F(ConfigTest, WriteCreatesConfigDirAndFile) {
 
 TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
   Config cfg;
+  cfg.load();
   cfg.set({"core.home", "/tmp/round-trip-vault"});
   cfg.set({"core.autopush", "false"});
   cfg.set({"ui.insert_with_editor", "true"});
@@ -430,6 +449,7 @@ TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
   write_config_object(cfg);
 
   Config reloaded;
+  reloaded.load();
 
   EXPECT_EQ(reloaded.core().home, "/tmp/round-trip-vault");
   EXPECT_FALSE(reloaded.core().autopush);
@@ -440,8 +460,9 @@ TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
 
 TEST_F(ConfigTest, WriteOverwritesExistingConfig) {
   Config cfg;
+  cfg.load();
   cfg.set({"core.home", "/tmp/first-vault"});
-  cfg.set({"pwgen.length", "18"});
+  cfg.set({"pwgen.length", "22"});
   write_config_object(cfg);
 
   cfg.set({"core.home", "/tmp/second-vault"});
@@ -450,6 +471,7 @@ TEST_F(ConfigTest, WriteOverwritesExistingConfig) {
   write_config_object(cfg);
 
   Config reloaded;
+  reloaded.load();
 
   EXPECT_EQ(reloaded.core().home, "/tmp/second-vault");
   EXPECT_FALSE(reloaded.core().autosync);
@@ -458,17 +480,20 @@ TEST_F(ConfigTest, WriteOverwritesExistingConfig) {
 
 TEST_F(ConfigTest, WriteDefaultConfigIsParseable) {
   Config cfg;
+  cfg.load();
 
   write_config_object(cfg);
 
   EXPECT_NO_THROW({
     Config reloaded;
+    reloaded.load();
     expect_default_values(reloaded);
   });
 }
 
 TEST_F(ConfigTest, PrintAllOutputsEveryField) {
   Config cfg;
+  cfg.load();
   cfg.set({"core.home", "/tmp/printed-vault"});
   cfg.set({"core.autopush", "false"});
   cfg.set({"core.autosync", "false"});
@@ -499,6 +524,7 @@ TEST_F(ConfigTest, PrintAllOutputsEveryField) {
 
 TEST_F(ConfigTest, PrintSectionOutputsOnlySection) {
   Config cfg;
+  cfg.load();
   cfg.set({"pwgen.length", "24"});
   cfg.set({"pwgen.symbols", "4"});
   cfg.set({"pwgen.numbers", "5"});
@@ -521,6 +547,7 @@ TEST_F(ConfigTest, PrintSectionOutputsOnlySection) {
 
 TEST_F(ConfigTest, PrintKeyOutputsSingleLine) {
   Config cfg;
+  cfg.load();
   cfg.set({"core.home", "/tmp/printed-vault"});
 
   const std::string output = capture_stdout([&] {
@@ -532,6 +559,7 @@ TEST_F(ConfigTest, PrintKeyOutputsSingleLine) {
 
 TEST_F(ConfigTest, PrintRejectsUnknownKeys) {
   Config cfg;
+  cfg.load();
   const std::vector<std::string> invalid_keys {
     "nope",
     "core.nope",
