@@ -12,7 +12,7 @@ namespace ck::cmd {
     logger.debug("Inserting a new secret");
     ck::mount::ResolvedPath rp = mnt.resolve(args.path);
 
-    ck::index::Index idx(rp.vault_path);
+    ck::index::Index idx(rp.crypt_path);
     idx.insert(rp.relative_path, args.pwgen);
   }
 }

@@ -32,16 +32,16 @@ namespace ck::cli {
     
     CLI::App* add_init(CLI::App& app, ParsedCmdArgs& args) {
       auto* init = app.add_subcommand("init", "initialize a new password store");
-      init -> add_option("-v,--vault", args.init.vault_name, "vault name") -> required();
-      init -> add_option("-k,--key", args.init.key_fpr, "vault key") -> required();
-      init -> add_option("-p,--path", args.init.path, "vault path");
+      init -> add_option("-v,--crypt", args.init.crypt_name, "crypt name") -> required();
+      init -> add_option("-k,--key", args.init.key_fpr, "crypt key") -> required();
+      init -> add_option("-p,--path", args.init.path, "crypt path");
       return init;
     }
       
     CLI::App* add_config(CLI::App& app, ParsedCmdArgs& args) {
       auto* config = app.add_subcommand("config", "Print and edit config file");
       config -> description("Print and edit config file");
-      // config -> add_option("-v, --vault", args.config.vault_name, "Set configs for a specific vault");
+      // config -> add_option("-v, --crypt", args.config.crypt_name, "Set configs for a specific crypt");
       config -> add_option("args", args.config.set_args, "Key [value]");
       return config;
     }
@@ -61,22 +61,22 @@ namespace ck::cli {
     
     CLI::App* add_mount(CLI::App& app, ParsedCmdArgs& args) {
       args.mount.list = false;
-      auto* mount = app.add_subcommand("mount", "Mount a vault");
-      mount -> add_option("path", args.mount.path, "Vault path")->expected(1);
+      auto* mount = app.add_subcommand("mount", "Mount a crypt");
+      mount -> add_option("path", args.mount.path, "Crypt path")->expected(1);
       mount -> add_option("alias", args.mount.alias, "Mount alias")->expected(1);
       mount -> add_flag("-l, --list", args.mount.list, "List mounts");
       return mount;
     }
     
     CLI::App* add_umount(CLI::App& app, ParsedCmdArgs& args) {
-      auto* umount = app.add_subcommand("umount", "Unmount a vault");
+      auto* umount = app.add_subcommand("umount", "Unmount a crypt");
       umount -> add_option("alias", args.umount.alias, "Mount alias")->required();
       return umount;
     }
 
     CLI::App* add_chroot(CLI::App& app, ParsedCmdArgs& args) {
-      auto* chroot = app.add_subcommand("chroot", "Change root vault");
-      chroot -> add_option("path", args.chroot.path, "Vault path")->required();
+      auto* chroot = app.add_subcommand("chroot", "Change root crypt");
+      chroot -> add_option("path", args.chroot.path, "Crypt path")->required();
       return chroot;
     }
   }

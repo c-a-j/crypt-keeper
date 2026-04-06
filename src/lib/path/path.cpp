@@ -19,9 +19,9 @@ namespace ck::path {
     return {};
   }
 
-  fs::path vault_root() {
-    std::string vault_dir = env_or_empty(VAULT_DIR_ENV_VAR.data());
-    if (!vault_dir.empty()) return fs::path(vault_dir);
+  fs::path crypt_root() {
+    std::string crypt_dir = env_or_empty(CRYPT_DIR_ENV_VAR.data());
+    if (!crypt_dir.empty()) return fs::path(crypt_dir);
     
     #ifdef _WIN32
       std::string appdata = env_or_empty("LOCALAPPDATA");

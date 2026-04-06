@@ -10,7 +10,7 @@ namespace ck::index {
   
   TextStyle get_scheme_style(OutputComponent c) {
     switch (c) {
-      case VaultName: return { Blue, { Bold } };
+      case CryptName: return { Blue, { Bold } };
       case NodeName:  return { Blue, { Bold } };
       case EntryName: return { Yellow, { Faint } };
       case RootMountPath:   return { Green, { Bold } };

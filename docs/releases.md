@@ -7,7 +7,7 @@ nature of the changes:
 
 - **patch**: bug fixes, typos, minor corrections
 - **minor**: new features, new commands, non-breaking changes
-- **major**: breaking changes to CLI behavior, vault format, or config schema
+- **major**: breaking changes to CLI behavior, crypt format, or config schema
 
 ### Cutting a release
 

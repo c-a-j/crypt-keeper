@@ -21,7 +21,7 @@ namespace ck::mount {
   void Mounts::load() {
     if (!ck::path::file_exists(this->file_)) {
       logger.debug("ck::mount::load()");
-      throw Error<MountErrc>{MountFileNotFound, "Initialize a vault or mount an existing one"};
+      throw Error<MountErrc>{MountFileNotFound, "Initialize a crypt or mount an existing one"};
     }
     
     std::ifstream in(this->file_, std::ios::binary);

@@ -11,8 +11,8 @@ namespace ck::index {
   using enum ck::util::error::IndexErrc;
   namespace fs = std::filesystem;
   
-  std::vector<std::string> get_fingerprints(const std::string& vault_path) {
-    fs::path gpg_id_file = ck::path::get_gpg_id_file(vault_path);
+  std::vector<std::string> get_fingerprints(const std::string& crypt_path) {
+    fs::path gpg_id_file = ck::path::get_gpg_id_file(crypt_path);
     std::ifstream file(gpg_id_file);
     if (!file.is_open()) {
       throw Error<IndexErrc>{GpgIdFileNotFound, gpg_id_file.string()};

@@ -5,7 +5,7 @@
 
 namespace ck::index {
   enum class OutputComponent {
-    VaultName,
+    CryptName,
     NodeName,
     EntryName,
     RootMountPath,

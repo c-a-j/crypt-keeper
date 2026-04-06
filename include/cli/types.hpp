@@ -12,13 +12,13 @@ namespace ck::cli {
   };
   
   struct InitArgs {
-    std::string vault_name;
+    std::string crypt_name;
     std::string key_fpr;
     std::optional<std::string> path;
   };
 
   struct ConfigArgs {
-    std::optional<std::string> vault_name;
+    std::optional<std::string> crypt_name;
     std::vector<std::string> set_args;
   };
 

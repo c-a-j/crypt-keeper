@@ -19,19 +19,19 @@ namespace ck::mount {
 
   void Mounts::chroot(const std::string& path) {
     std::vector<std::string> alias_parts = ck::path::parse_path(path);
-    fs::path vault_path;
+    fs::path crypt_path;
 
-    // if alias is single path element, it is assumed to refer to a vault in
+    // if alias is single path element, it is assumed to refer to a crypt in
     // cfg.home
     if (alias_parts.size() == 1) {
-      vault_path = fs::path(cfg.home()) / fs::path(path);
+      crypt_path = fs::path(cfg.home()) / fs::path(path);
     } else {
-      vault_path = fs::path(path);
+      crypt_path = fs::path(path);
     }
 
-    // nothing to mount if the vault isn't initialized
-    if (!initialized(vault_path)) { 
-      throw Error<MountErrc>{VaultNotInitialized, path};
+    // nothing to mount if the crypt isn't initialized
+    if (!initialized(crypt_path)) { 
+      throw Error<MountErrc>{CryptNotInitialized, path};
     }
 
     fs::path mnt_file = ck::path::mount_file();
@@ -43,7 +43,7 @@ namespace ck::mount {
     // path conflicts with the new root
     State state;
     state.root = {
-      .path = vault_path,
+      .path = crypt_path,
       .hash = hash()
     };
 
@@ -58,10 +58,10 @@ namespace ck::mount {
     }
 
     // set new root
-    this->state_.root.path = vault_path;
+    this->state_.root.path = crypt_path;
     this->state_.root.hash = hash();
     this->save();
-    logger.info("Root vault has been set to " + vault_path.string());
+    logger.info("Root crypt has been set to " + crypt_path.string());
     this->print();
     return;
   }

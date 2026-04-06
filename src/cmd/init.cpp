@@ -29,32 +29,32 @@ namespace ck::cmd {
       throw Error<InitErrc>{KeyNotFound, args.key_fpr};
     }
     
-    fs::path vault_path;
+    fs::path crypt_path;
     
     if (!args.path) {
-      vault_path = fs::path(cfg.home()) / args.vault_name;
+      crypt_path = fs::path(cfg.home()) / args.crypt_name;
     } else {
-      vault_path = *args.path;
+      crypt_path = *args.path;
     }
     
-    bool exists = ck::path::directory_exists(vault_path);
+    bool exists = ck::path::directory_exists(crypt_path);
     if (exists) {
-      throw Error<InitErrc>{AlreadyExists, vault_path.string()};
+      throw Error<InitErrc>{AlreadyExists, crypt_path.string()};
     } 
     
-    const fs::path gpg_id_path = vault_path / GPG_ID_FILE;
+    const fs::path gpg_id_path = crypt_path / GPG_ID_FILE;
     ck::fio::atomic_write(gpg_id_path, args.key_fpr);
 
-    ck::index::Index idx = ck::index::Index::empty(vault_path);
+    ck::index::Index idx = ck::index::Index::empty(crypt_path);
     idx.save();
 
     std::string msg1;
-    msg1 += "Vault " + args.vault_name + " has been initialized";
+    msg1 += "Crypt " + args.crypt_name + " has been initialized";
     logger.info(msg1);
     
     if (!ck::mount::mnt.file_exists()) {
       logger.info("Welcome to Crypt Keeper - the spooky password manager");
-      ck::mount::mnt.chroot(vault_path);
+      ck::mount::mnt.chroot(crypt_path);
     }
   }
 }

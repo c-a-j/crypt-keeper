@@ -21,7 +21,7 @@ namespace ck::config {
   void Config::load() {
     std::filesystem::path cfg_file = ck::path::config_file();
     if (!ck::path::file_exists(cfg_file)) {
-      this->state_.core.home = ck::path::vault_root();
+      this->state_.core.home = ck::path::crypt_root();
       return;
     }
 

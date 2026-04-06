@@ -68,7 +68,7 @@ feature parity with `gopass` is a long-term aim.
 ### Mounts
 
 I'm a big fan of the `gopass` mount design, so I made this a core feature
-of Crypt Keeper. The first vault you create automatically becomes the root
+of Crypt Keeper. The first crypt you create automatically becomes the root
 mount. This can easily be changed later with the `chroot` command. Additional
 mounts can be added with `mount` and are placed under the root mount at a
 specified alias.
@@ -82,15 +82,15 @@ now that I'm considering a sync with BitWarden feature, I'll probably have to
 reintroduce a JSON parser eventually anyway.
 
 Each entry contains a string UUID and an array of path elements. The UUID is the
-filename of a secret in the vault and the path array is used to build a trie.
+filename of a secret in the crypt and the path array is used to build a trie.
 
 ## Quick Start Guide
 
-#### Initialize a new vault
-For now, you must provide the full gpg key fingerprint to initialize a vault.
+#### Initialize a new crypt
+For now, you must provide the full gpg key fingerprint to initialize a crypt.
 ```bash
 gpg --list-keys
-ck init -v myvault -k {full_gpg_key_fingerprint}
+ck init -v mycrypt -k {full_gpg_key_fingerprint}
 ```
 
 #### List current configuration
@@ -99,7 +99,7 @@ ck config
 ```
 
 **Note**: Most of these are just placeholders at this point in development.
-Focus your attention mainly on `core.home`, this is where new vaults are added
+Focus your attention mainly on `core.home`, this is where new crypts are added
 by default when an alternate path is not specified.
 
 #### Insert a secret
@@ -119,52 +119,52 @@ ck show some/secret
 ```
 
 ```text
-Crypt Keeper ⟶  (/home/cjordan/.local/share/crypt-keeper/myvault)
+Crypt Keeper ⟶  (/home/cjordan/.local/share/crypt-keeper/mycrypt)
 └── some
     └── secret
 ```
 
-#### Mount another vault
+#### Mount another crypt
 
 ```bash
-ck init -v anothervault -k {full_gpg_key_fingerprint}
+ck init -v anothercrypt -k {full_gpg_key_fingerprint}
 ```
 
-At this point, you have some options. If the vault was initialized in
-`core.home` and you don't want to provide an alternate alias, the vault will be
+At this point, you have some options. If the crypt was initialized in
+`core.home` and you don't want to provide an alternate alias, the crypt will be
 mounted with its name as the alias by default.
 
 ```bash
-ck mount anothervault
+ck mount anothercrypt
 ```
 ```text
-Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/myvault)
-└── anothervault ⟶  (/home/user/.local/share/crypt-keeper/anothervault)
+Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/mycrypt)
+└── anothercrypt ⟶  (/home/user/.local/share/crypt-keeper/anothercrypt)
 ```
 
-If instead the vault is in an alternate location or you wish to use an alternate
+If instead the crypt is in an alternate location or you wish to use an alternate
 alias, use this:
 
 ```bash
-ck mount anothervault some/other/location/in/mount/tree
+ck mount anothercrypt some/other/location/in/mount/tree
 ```
 
 ```text
-Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/myvault)
+Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/mycrypt)
 └── some
     ├── other
     │   └── location
     │       └── in
     │           └── mount
-    │               └── tree ⟶  (/home/user/.local/share/crypt-keeper/anothervault)
+    │               └── tree ⟶  (/home/user/.local/share/crypt-keeper/anothercrypt)
     └── secret
 ```
 
-**Note**: Mounts are designed to shadow items in the root vault as long as a
+**Note**: Mounts are designed to shadow items in the root crypt as long as a
 secret isn't located along the specified alias path. In other words, a terminal
 node can never have children.
 
-#### Unmount a vault
+#### Unmount a crypt
 
 ```bash
 ck umount some/other/location/in/mount/tree
@@ -172,13 +172,13 @@ ck umount some/other/location/in/mount/tree
 
 ```text
 ck  [.]  some/other/location/in/mount/tree has been unmounted
-Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/myvault)
+Crypt Keeper ⟶  (/home/user/.local/share/crypt-keeper/mycrypt)
 ```
 
-#### Change root vault
+#### Change root crypt
 
 ```bash
-ck chroot anothervault
+ck chroot anothercrypt
 ```
 
 ## Contributing

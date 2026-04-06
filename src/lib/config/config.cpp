@@ -28,7 +28,7 @@ namespace ck::config {
   
   std::string& Config::home() { 
     if (state_.core.home.empty()) { 
-      state_.core.home = ck::path::vault_root();
+      state_.core.home = ck::path::crypt_root();
     }
     return state_.core.home;
   }

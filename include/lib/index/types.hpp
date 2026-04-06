@@ -15,7 +15,7 @@ namespace ck::index {
   struct Node {
     std::optional<Entry> entry;
     std::unordered_map<std::string, Node> children;
-    std::optional<std::string> path; // vault path, only defined at root node
+    std::optional<std::string> path; // crypt path, only defined at root node
   };
 
   struct IndexTree {
@@ -44,7 +44,7 @@ namespace ck::index {
     private:
       Node root_;
       std::string alias_; // mount alias
-      fs::path path_; // vault path
+      fs::path path_; // crypt path
       fs::path file_; // full path to index file
   };
 }

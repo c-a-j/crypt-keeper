@@ -54,7 +54,7 @@ namespace {
   }
 
   void expect_default_values(const Config& cfg) {
-    EXPECT_EQ(cfg.core().home, ck::path::vault_root().string());
+    EXPECT_EQ(cfg.core().home, ck::path::crypt_root().string());
     EXPECT_TRUE(cfg.core().autopush);
     EXPECT_TRUE(cfg.core().autosync);
     EXPECT_FALSE(cfg.ui().insert_with_editor);
@@ -150,7 +150,7 @@ TEST_F(ConfigTest, MissingConfigFileUsesDefaults) {
 TEST_F(ConfigTest, DeserializesValidConfigFile) {
   write_config(R"toml(
 [core]
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 autopush = false
 autosync = false
 
@@ -168,7 +168,7 @@ lowercase = 11
   Config cfg;
   cfg.load();
 
-  EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
+  EXPECT_EQ(cfg.core().home, "/tmp/test-crypt");
   EXPECT_FALSE(cfg.core().autopush);
   EXPECT_FALSE(cfg.core().autosync);
   EXPECT_TRUE(cfg.ui().insert_with_editor);
@@ -182,7 +182,7 @@ lowercase = 11
 TEST_F(ConfigTest, MalformedTomlThrows) {
   write_config(R"toml(
 [core
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 )toml");
 
   Config cfg;
@@ -192,7 +192,7 @@ home = "/tmp/test-vault"
 TEST_F(ConfigTest, MissingSectionUsesDefaults) {
   write_config(R"toml(
 [core]
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 autopush = false
 autosync = false
 
@@ -207,7 +207,7 @@ lowercase = 18
   Config cfg;
   cfg.load();
 
-  EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
+  EXPECT_EQ(cfg.core().home, "/tmp/test-crypt");
   EXPECT_FALSE(cfg.core().autopush);
   EXPECT_FALSE(cfg.core().autosync);
   EXPECT_FALSE(cfg.ui().insert_with_editor);
@@ -221,7 +221,7 @@ lowercase = 18
 TEST_F(ConfigTest, NonTableSectionUsesDefaults) {
   write_config(R"toml(
 [core]
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 autopush = false
 autosync = false
 
@@ -247,7 +247,7 @@ lowercase = 18
 TEST_F(ConfigTest, MissingFieldUsesDefault) {
   write_config(R"toml(
 [core]
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 autopush = false
 autosync = false
 
@@ -274,7 +274,7 @@ lowercase = 10
 TEST_F(ConfigTest, WrongTypedFieldUsesDefault) {
   write_config(R"toml(
 [core]
-home = "/tmp/test-vault"
+home = "/tmp/test-crypt"
 autopush = false
 autosync = "false"
 
@@ -292,7 +292,7 @@ lowercase = 9
   Config cfg;
   cfg.load();
 
-  EXPECT_EQ(cfg.core().home, "/tmp/test-vault");
+  EXPECT_EQ(cfg.core().home, "/tmp/test-crypt");
   EXPECT_FALSE(cfg.core().autopush);
   EXPECT_TRUE(cfg.core().autosync);
   EXPECT_FALSE(cfg.ui().insert_with_editor);
@@ -328,7 +328,7 @@ lowercase = 10
   EXPECT_THROW(const_cfg.home(), ck::util::error::AppError);
 }
 
-TEST_F(ConfigTest, MutableHomeBackfillsVaultRootWhenMissing) {
+TEST_F(ConfigTest, MutableHomeBackfillsCryptRootWhenMissing) {
   write_config(R"toml(
 [core]
 autopush = false
@@ -349,17 +349,17 @@ lowercase = 10
   cfg.load();
 
   EXPECT_TRUE(cfg.core().home.empty());
-  EXPECT_EQ(cfg.home(), ck::path::vault_root().string());
-  EXPECT_EQ(cfg.core().home, ck::path::vault_root().string());
+  EXPECT_EQ(cfg.home(), ck::path::crypt_root().string());
+  EXPECT_EQ(cfg.core().home, ck::path::crypt_root().string());
 }
 
 TEST_F(ConfigTest, SetStringFieldUpdatesValue) {
   Config cfg;
   cfg.load();
 
-  cfg.set({"core.home", "/tmp/override-vault"});
+  cfg.set({"core.home", "/tmp/override-crypt"});
 
-  EXPECT_EQ(cfg.core().home, "/tmp/override-vault");
+  EXPECT_EQ(cfg.core().home, "/tmp/override-crypt");
 }
 
 TEST_F(ConfigTest, SetBoolFieldUpdatesTrueAndFalse) {
@@ -440,7 +440,7 @@ TEST_F(ConfigTest, WriteCreatesConfigDirAndFile) {
 TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
   Config cfg;
   cfg.load();
-  cfg.set({"core.home", "/tmp/round-trip-vault"});
+  cfg.set({"core.home", "/tmp/round-trip-crypt"});
   cfg.set({"core.autopush", "false"});
   cfg.set({"ui.insert_with_editor", "true"});
   cfg.set({"pwgen.length", "28"});
@@ -451,7 +451,7 @@ TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
   Config reloaded;
   reloaded.load();
 
-  EXPECT_EQ(reloaded.core().home, "/tmp/round-trip-vault");
+  EXPECT_EQ(reloaded.core().home, "/tmp/round-trip-crypt");
   EXPECT_FALSE(reloaded.core().autopush);
   EXPECT_TRUE(reloaded.ui().insert_with_editor);
   EXPECT_EQ(reloaded.pwgen().length, 28);
@@ -461,11 +461,11 @@ TEST_F(ConfigTest, WritePersistsValuesAcrossReload) {
 TEST_F(ConfigTest, WriteOverwritesExistingConfig) {
   Config cfg;
   cfg.load();
-  cfg.set({"core.home", "/tmp/first-vault"});
+  cfg.set({"core.home", "/tmp/first-crypt"});
   cfg.set({"pwgen.length", "22"});
   write_config_object(cfg);
 
-  cfg.set({"core.home", "/tmp/second-vault"});
+  cfg.set({"core.home", "/tmp/second-crypt"});
   cfg.set({"core.autosync", "false"});
   cfg.set({"pwgen.length", "42"});
   write_config_object(cfg);
@@ -473,7 +473,7 @@ TEST_F(ConfigTest, WriteOverwritesExistingConfig) {
   Config reloaded;
   reloaded.load();
 
-  EXPECT_EQ(reloaded.core().home, "/tmp/second-vault");
+  EXPECT_EQ(reloaded.core().home, "/tmp/second-crypt");
   EXPECT_FALSE(reloaded.core().autosync);
   EXPECT_EQ(reloaded.pwgen().length, 42);
 }
@@ -494,7 +494,7 @@ TEST_F(ConfigTest, WriteDefaultConfigIsParseable) {
 TEST_F(ConfigTest, PrintAllOutputsEveryField) {
   Config cfg;
   cfg.load();
-  cfg.set({"core.home", "/tmp/printed-vault"});
+  cfg.set({"core.home", "/tmp/printed-crypt"});
   cfg.set({"core.autopush", "false"});
   cfg.set({"core.autosync", "false"});
   cfg.set({"ui.insert_with_editor", "true"});
@@ -509,7 +509,7 @@ TEST_F(ConfigTest, PrintAllOutputsEveryField) {
   });
 
   const std::string expected =
-    format_line("core", "home", "/tmp/printed-vault") +
+    format_line("core", "home", "/tmp/printed-crypt") +
     format_line("core", "autopush", false) +
     format_line("core", "autosync", false) +
     format_line("ui", "insert_with_editor", true) +
@@ -548,13 +548,13 @@ TEST_F(ConfigTest, PrintSectionOutputsOnlySection) {
 TEST_F(ConfigTest, PrintKeyOutputsSingleLine) {
   Config cfg;
   cfg.load();
-  cfg.set({"core.home", "/tmp/printed-vault"});
+  cfg.set({"core.home", "/tmp/printed-crypt"});
 
   const std::string output = capture_stdout([&] {
     cfg.print("core.home");
   });
 
-  EXPECT_EQ(output, format_line("core", "home", "/tmp/printed-vault"));
+  EXPECT_EQ(output, format_line("core", "home", "/tmp/printed-crypt"));
 }
 
 TEST_F(ConfigTest, PrintRejectsUnknownKeys) {

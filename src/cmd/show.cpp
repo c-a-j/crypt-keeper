@@ -40,7 +40,7 @@ namespace ck::cmd {
     // resolve the path
     // only generate the index needed
 
-    // if printing from root vault, generate an index for every mount
+    // if printing from root crypt, generate an index for every mount
     // root nodes will need to be inserted in their alias locations for printing
 
     mnt.load();
@@ -60,7 +60,7 @@ namespace ck::cmd {
       logger.debug("Printing the subtree tree or secret");
       
       ck::mount::ResolvedPath rp = mnt.resolve(*args.path);
-      ck::index::Index idx(rp.vault_path, rp.alias);
+      ck::index::Index idx(rp.crypt_path, rp.alias);
 
       if (rp.relative_path.empty()) {
         idx.print(false);

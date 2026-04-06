@@ -12,23 +12,23 @@ namespace ck::index {
   using namespace ck::crypto;
   using enum ck::util::error::IndexErrc;
 
-  Index::Index(const std::string& vault_path) { 
-    this->path_ = fs::path(vault_path);
+  Index::Index(const std::string& crypt_path) { 
+    this->path_ = fs::path(crypt_path);
     this->file_ = this->path_ / INDEX_FILE;
-    this->load(vault_path); 
+    this->load(crypt_path); 
   }
 
-  Index::Index(const std::string& vault_path, const std::string& alias) { 
-    this->load(vault_path); 
+  Index::Index(const std::string& crypt_path, const std::string& alias) { 
+    this->load(crypt_path); 
     this->alias_ = alias;
   }
 
-  Index Index::empty(const std::string& vault_path) {
+  Index Index::empty(const std::string& crypt_path) {
     Index idx;
-    idx.path_ = fs::path(vault_path);
+    idx.path_ = fs::path(crypt_path);
     idx.file_ = idx.path_ / fs::path(INDEX_FILE);
     idx.root_ = Node{};
-    idx.root_.path = vault_path;
+    idx.root_.path = crypt_path;
     return idx;
   }
 

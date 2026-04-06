@@ -21,8 +21,8 @@ namespace ck::index {
   using ck::util::error::IndexErrc;
   using enum ck::util::error::IndexErrc;
 
-  void Index::load(const std::string& vault_path, const std::string& alias) {
-    fs::path path = fs::path(vault_path);
+  void Index::load(const std::string& crypt_path, const std::string& alias) {
+    fs::path path = fs::path(crypt_path);
     fs::path file = path / INDEX_FILE;
 
     const crypto::SecureBytes cipher = crypto::read_file(file);

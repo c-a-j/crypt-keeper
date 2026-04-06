@@ -35,10 +35,10 @@ namespace ck::util::error {
   inline std::string_view Error<InitErrc>::label(InitErrc c) {
     switch (c) {
       case InitErrc::KeyNotFound:           return "Public key not found";
-      case InitErrc::CreateDirectoryFailed: return "Failed to create vault";
+      case InitErrc::CreateDirectoryFailed: return "Failed to create crypt";
       case InitErrc::OpenGpgIdFailed:       return "Failed to open .gpg-id";
       case InitErrc::WriteGpgIdFailed:      return "Failed to write .gpg-id";
-      case InitErrc::AlreadyExists:         return "Vault already exists";
+      case InitErrc::AlreadyExists:         return "Crypt already exists";
       case InitErrc::IoError:               return "I/O error";
       case InitErrc::OpenIndexFailed:       return "Failed to open index file";
       case InitErrc::WriteIndexFailed:      return "Failed to create a new index file";
@@ -61,7 +61,7 @@ namespace ck::util::error {
   template<>
   inline std::string_view Error<ConfigErrc>::label(ConfigErrc c) {
     switch (c) {
-      case ConfigErrc::CreateDirectoryFailed: return "Failed to create vault";
+      case ConfigErrc::CreateDirectoryFailed: return "Failed to create crypt";
       case ConfigErrc::CreateConfigFailed:    return "Failed to create conifig file";
       case ConfigErrc::WriteConfigFailed:     return "Failed to write conifig file";
       case ConfigErrc::AlreadyExists:         return "Configuration file already exists";
@@ -77,7 +77,7 @@ namespace ck::util::error {
   enum class MountErrc {
     MountFileNotFound,
     WriteMountFailed,
-    VaultNotInitialized,
+    CryptNotInitialized,
     NoAlias,
     AliasExists,
     AliasDoesNotExist,
@@ -92,11 +92,11 @@ namespace ck::util::error {
     switch (c) {
       case MountErrc::MountFileNotFound:      return "Mount file not found";
       case MountErrc::WriteMountFailed:       return "Failed to write mount file";
-      case MountErrc::VaultNotInitialized:    return "Vault is not initialized";
+      case MountErrc::CryptNotInitialized:    return "Crypt is not initialized";
       case MountErrc::NoAlias:                return "Invalid mount file, every mount needs an alias";
       case MountErrc::AliasExists:            return "Alias already exists";
       case MountErrc::AliasDoesNotExist:      return "Alias does not exist";
-      case MountErrc::NoRoot:                 return "There is no root vault";
+      case MountErrc::NoRoot:                 return "There is no root crypt";
       case MountErrc::InvalidArguments:       return "Invalid arguments";
       case MountErrc::InvalidMountFile:       return "Invalid mount file";
       case MountErrc::SecretAlongAlias:       return "There is a secret along this alias path";
@@ -149,7 +149,7 @@ namespace ck::util::error {
   }
   
   enum class IndexErrc {
-    VaultUnspecified,
+    CryptUnspecified,
     NoPath,
     SecretExists,
     PathConflict,
@@ -166,7 +166,7 @@ namespace ck::util::error {
   template<>
   inline std::string_view Error<IndexErrc>::label(IndexErrc c) {
     switch (c) {
-      case IndexErrc::VaultUnspecified:           return "Vault unspecified";
+      case IndexErrc::CryptUnspecified:           return "Crypt unspecified";
       case IndexErrc::NoPath:                     return "Path unspecified";
       case IndexErrc::SecretExists:               return "Secret already exists";
       case IndexErrc::PathConflict:               return "Path conflict";
@@ -192,7 +192,7 @@ namespace ck::util::error {
     FileSystemError,
     HomeNotSet,
     LocalAppDataNotSet,
-    VaultUnspecified,
+    CryptUnspecified,
   };
   template<>
   inline std::string_view Error<PathErrc>::label(PathErrc c) {
@@ -205,7 +205,7 @@ namespace ck::util::error {
       case PathErrc::FileSystemError:         return "Filesystem error";
       case PathErrc::HomeNotSet:              return "HOME not set";
       case PathErrc::LocalAppDataNotSet:      return "LOCALAPPDATA not set";
-      case PathErrc::VaultUnspecified:        return "Vault unspecified";
+      case PathErrc::CryptUnspecified:        return "Crypt unspecified";
       default:                                return "Unknown error";
     }
   }

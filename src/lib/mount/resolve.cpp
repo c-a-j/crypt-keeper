@@ -28,13 +28,13 @@ namespace ck::mount {
       auto it = this->state_.mounts.find(alias);
       if (it != this->state_.mounts.end()) {
         rp.alias = alias;
-        rp.vault_path = it->second.path;
+        rp.crypt_path = it->second.path;
         rp.relative_path = ck::path::join_suffix(parts, n);
         return rp;
       }
     }
     rp.alias = {};
-    rp.vault_path = this->state_.root.path;
+    rp.crypt_path = this->state_.root.path;
     rp.relative_path = ck::path::join_suffix(parts, 0);
     return rp;
   }

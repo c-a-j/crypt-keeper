@@ -4,7 +4,7 @@ build_dir := "build"
 build_type := "Debug"
 binary_name := "ck"
 binary := build_dir + "/src/" + binary_name
-vault_dir := "~/.local/share/crypt-keeper"
+crypt_dir := "~/.local/share/crypt-keeper"
 config_dir := "~/.config/crypt-keeper"
 asan_env := "ASAN_SYMBOLIZER_PATH=" + `which llvm-symbolizer` + " ASAN_OPTIONS=symbolize=1"
 bindir := "~/.local/bin"
@@ -43,5 +43,5 @@ install dir=bindir:
   {{ error("Windows install not supported. Use WSL or install the binary manually.") }}
 
 destroy:
-  rm -rf {{ vault_dir }}
+  rm -rf {{ crypt_dir }}
   rm -rf {{ config_dir }}

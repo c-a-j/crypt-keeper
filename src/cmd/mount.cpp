@@ -11,9 +11,9 @@ namespace ck::cmd {
     if (list) { mnt.print(); return; }
 
     if (args.path && !args.alias) {
-      // When one argument is given, args.path essentially serves as the vault
-      // path and alias. In this case the argument is expected to be a vault
-      // that exists in core.home. If vault_home/args.path is not found, an
+      // When one argument is given, args.path essentially serves as the crypt
+      // path and alias. In this case the argument is expected to be a crypt
+      // that exists in core.home. If crypt_home/args.path is not found, an
       // exception is thrown 
 
       // example
@@ -24,10 +24,10 @@ namespace ck::cmd {
       return;
     } 
     // if path is a single component, it should be interpreted as pointing to 
-    // a directory relative to vault home
+    // a directory relative to crypt home
 
     // ck mount foo/bar foo
-    // this should attemt to mount the actual directory vault_home/foo with 
+    // this should attemt to mount the actual directory crypt_home/foo with 
     // with the alias foo/bar
 
     // ck mount foo/bar /any/directory

@@ -39,7 +39,7 @@ namespace ck::mount {
 
   struct ResolvedPath {
     std::string alias;
-    fs::path vault_path;
+    fs::path crypt_path;
     std::string relative_path;
   };
 
